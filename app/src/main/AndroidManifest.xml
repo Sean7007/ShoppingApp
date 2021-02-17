@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.desperdartos.shoppingapp"
+    android:installLocation="auto">
+
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@drawable/shop"
+        android:label="@string/app_name"
+        android:roundIcon="@drawable/shop"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.ShoppingApp.NoActionBar">
+        <activity android:name=".AddProductActivity"></activity>
+        <activity android:name=".ProfileEditSellerActivity" />
+        <activity android:name=".ProfileEditUserActivity" />
+        <activity android:name=".MainUserActivity" />
+        <activity android:name=".MainSellerActivity" />
+        <activity android:name=".ForgotPasswordActivity" />
+        <activity android:name=".RegisterUserActivity" />
+        <activity android:name=".RegisterSellerActivity" />
+        <activity android:name=".LoginActivity" />
+        <activity android:name=".SplashActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
+            android:theme="@style/Base.Theme.AppCompat" />
+    </application>
+
+</manifest>

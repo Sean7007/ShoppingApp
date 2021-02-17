@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1063231661855",
+    "project_id": "shoppingapp-55a59",
+    "storage_bucket": "shoppingapp-55a59.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1063231661855:android:2a61ca12604da4cf07322a",
+        "android_client_info": {
+          "package_name": "com.desperdartos.shoppingapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1063231661855-kmdbonksqftohrol5f1dmkthl3inkhfi.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCOOLAlCggGfonE8rrJ1JAXqIJLZaiD_LY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1063231661855-kmdbonksqftohrol5f1dmkthl3inkhfi.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
