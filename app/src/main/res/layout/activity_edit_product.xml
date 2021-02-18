@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".AddProductActivity">
+    tools:context=".EditProductActivity">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -21,7 +21,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Add Product"
+            android:text="Edit Product"
             android:textColor="@color/white"
             android:textSize="20sp"
             android:textStyle="bold"
@@ -142,14 +142,18 @@
             android:layout_below="@+id/discountedPriceEt"/>
 
         <Button
-            android:id="@+id/addProductBtn"
+            android:id="@+id/updateProductBtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Add Product"
+            android:text="Update Product"
             android:layout_centerHorizontal="true"
             android:layout_below="@+id/discountedNotePriceEt"
             style="@style/Widget.AppCompat.Button.Colored"
             android:minWidth="150dp"
             android:layout_marginTop="5dp"/>
+
+
+
+
     </RelativeLayout>
 </LinearLayout>
