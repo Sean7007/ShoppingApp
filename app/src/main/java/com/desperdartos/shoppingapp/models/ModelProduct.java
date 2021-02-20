@@ -1,4 +1,4 @@
-package com.desperdartos.shoppingapp;
+package com.desperdartos.shoppingapp.models;
 
 public class ModelProduct {
     private String productId,productTitle, productCategory,productDescription,

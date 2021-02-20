@@ -1,11 +1,10 @@
-package com.desperdartos.shoppingapp;
+package com.desperdartos.shoppingapp.adapters;
 
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Paint;
-import android.text.Layout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +18,11 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.desperdartos.shoppingapp.FilterProduct;
+import com.desperdartos.shoppingapp.FilterProductUser;
+import com.desperdartos.shoppingapp.R;
+import com.desperdartos.shoppingapp.activities.EditProductActivity;
+import com.desperdartos.shoppingapp.models.ModelProduct;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
@@ -166,7 +170,7 @@ public class AdapterProductSeller extends RecyclerView.Adapter<AdapterProductSel
             public void onClick(View view) {
                 bottomSheetDialog.dismiss();
                 //Open edit product activity
-                Intent intent = new Intent(context,EditProductActivity.class);
+                Intent intent = new Intent(context, EditProductActivity.class);
                 intent.putExtra("productId", id);
                 context.startActivity(intent);
             }

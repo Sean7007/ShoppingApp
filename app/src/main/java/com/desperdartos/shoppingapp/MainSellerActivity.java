@@ -6,7 +6,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -16,11 +15,13 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.desperdartos.shoppingapp.activities.AddProductActivity;
+import com.desperdartos.shoppingapp.models.ModelProduct;
+import com.desperdartos.shoppingapp.adapters.AdapterProductSeller;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -297,7 +298,7 @@ public class MainSellerActivity extends AppCompatActivity {
                             String profileImage = "" +ds.child("profileImage").getValue();
 
                             //Set data to UI
-                            nameTv.setText(name + "("+accountType+")");
+                            nameTv.setText(name);
                             shopNameTv.setText(email);
                             emailTv.setText(shopName);
 

@@ -1,7 +1,9 @@
 package com.desperdartos.shoppingapp;
 
-import android.graphics.ColorSpace;
 import android.widget.Filter;
+
+import com.desperdartos.shoppingapp.models.ModelProduct;
+import com.desperdartos.shoppingapp.adapters.AdapterProductSeller;
 
 import java.util.ArrayList;
 

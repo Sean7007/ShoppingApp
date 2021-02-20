@@ -147,7 +147,7 @@ public class RegisterSellerActivity extends AppCompatActivity implements Locatio
         });
     }
 
-    //Var declarataion
+    //Var declaration
     private String fullName, shopName, phoneNumber, deliveryFee, country, zone, city, address, email, password, confirmPassword;
     private void inputData() {
         fullName = nameEt.getText().toString().trim();

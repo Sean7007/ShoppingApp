@@ -1,4 +1,4 @@
-package com.desperdartos.shoppingapp;
+package com.desperdartos.shoppingapp.activities;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -27,6 +27,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.desperdartos.shoppingapp.Constants;
+import com.desperdartos.shoppingapp.R;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -183,7 +185,7 @@ public class EditProductActivity extends AppCompatActivity {
                         categoryTv.setText(productCategory);
                         discountedNotePriceEt.setText(discountNote);
                         quantityEt.setText(productQuantity);
-                        priceEt.setText(productQuantity);
+                        priceEt.setText(originalPrice);
                         discountedPriceEt.setText(discountPrice);
 
                         try{
