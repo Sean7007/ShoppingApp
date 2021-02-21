@@ -233,7 +233,7 @@ public class RegisterUserActivity extends AppCompatActivity implements LocationL
             hashMap.put("latitude",""+latitude);
             hashMap.put("longitude",""+longitude);
             hashMap.put("timeStamp",""+timeStamp);
-            hashMap.put("accountType","Seller");
+            hashMap.put("accountType","User");
             hashMap.put("online","true");
             hashMap.put("shopOpen","true");
             hashMap.put("profileImage","");

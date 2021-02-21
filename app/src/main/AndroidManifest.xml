@@ -16,7 +16,8 @@
         android:roundIcon="@drawable/shop"
         android:supportsRtl="true"
         android:theme="@style/Theme.ShoppingApp.NoActionBar">
-        <activity android:name=".ShopDetailsActivity"></activity>
+        <activity android:name=".ShopDetailsActivity"
+            android:windowSoftInputMode="stateHidden"/>
         <activity android:name=".activities.EditProductActivity" />
         <activity android:name=".activities.AddProductActivity" />
         <activity android:name=".ProfileEditSellerActivity" />
