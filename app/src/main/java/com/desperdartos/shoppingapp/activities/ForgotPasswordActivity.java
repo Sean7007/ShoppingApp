@@ -1,7 +1,8 @@
-package com.desperdartos.shoppingapp;
+package com.desperdartos.shoppingapp.activities;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.databinding.DataBindingUtil;
 
 import android.app.ProgressDialog;
 import android.os.Bundle;
@@ -12,43 +13,37 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
+import com.desperdartos.shoppingapp.R;
+import com.desperdartos.shoppingapp.commands.ForgotPasswordActivityClicks;
+import com.desperdartos.shoppingapp.databinding.ActivityForgotPasswordBinding;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 
 public class ForgotPasswordActivity extends AppCompatActivity {
-
-    private ImageButton backBtn;
-    private EditText emailEt;
-    private Button recoverBtn;
-
+    ActivityForgotPasswordBinding binding;
     private FirebaseAuth firebaseAuth;
     private ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_forgot_password);
-
-        backBtn = findViewById(R.id.backBtn);
-        emailEt = findViewById(R.id.emailEt);
-        recoverBtn = findViewById(R.id.recoveryBtn);
+        //setContentView(R.layout.activity_forgot_password);
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_forgot_password);
 
         firebaseAuth = FirebaseAuth.getInstance();
         progressDialog = new ProgressDialog(this);
         progressDialog.setTitle("Please Wait");
         progressDialog.setCanceledOnTouchOutside(false);
 
-        backBtn.setOnClickListener(new View.OnClickListener() {
+        binding.setClickHandle(new ForgotPasswordActivityClicks() {
             @Override
-            public void onClick(View view) {
+            public void backButtonClick() {
                 onBackPressed();
             }
-        });
 
-        recoverBtn.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
+            public void recoverButtonClick() {
                 recoverPassword();
             }
         });
@@ -56,9 +51,10 @@ public class ForgotPasswordActivity extends AppCompatActivity {
 
     private String email;
     private void recoverPassword() {
-        email = emailEt.getText().toString().trim();
+        email = binding.emailEt.getText().toString().trim();
         if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()){
-            Toast.makeText(this,"Invalid Email...",Toast.LENGTH_SHORT).show();
+            binding.emailEt.setError("Invalid Email Address");
+            binding.emailEt.requestFocus();
             return;
         }
         progressDialog.setMessage("Sending Reset Password");
@@ -77,6 +73,7 @@ public class ForgotPasswordActivity extends AppCompatActivity {
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         //Failed sending instructions
+                        progressDialog.dismiss();
                         Toast.makeText(ForgotPasswordActivity.this,""+e.getMessage(),Toast.LENGTH_SHORT).show();
                     }
                 });

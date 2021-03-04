@@ -1,12 +1,14 @@
-package com.desperdartos.shoppingapp;
+package com.desperdartos.shoppingapp.activities;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.databinding.DataBindingUtil;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.ContentValues;
@@ -22,13 +24,12 @@ import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.ImageView;
+import android.text.TextUtils;
 import android.widget.Toast;
 
+import com.desperdartos.shoppingapp.R;
+import com.desperdartos.shoppingapp.commands.EditUserProfileClicks;
+import com.desperdartos.shoppingapp.databinding.ActivityProfileEditUserBinding;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -49,25 +50,19 @@ import java.util.List;
 import java.util.Locale;
 
 public class ProfileEditUserActivity extends AppCompatActivity implements LocationListener {
-
-    private ImageButton backBtn, gpsBtn;
-    private ImageView profileIv;
-    private EditText nameEt, phoneEt, countryEt, zoneEt, cityEt, addressEt;
-    private Button updateBtn;
-
+    ActivityProfileEditUserBinding binding;
     //permission constants
     private static final int LOCATION_REQUEST_CODE = 100;
     private static final int CAMERA_REQUEST_CODE = 200;
     private static final int STORAGE_REQUEST_CODE = 300;
-
     //image,location pick constraints
     private static final int IMAGE_PICK_GALLERY_CODE = 400;
     private static final int IMAGE_PICK_CAMERA_CODE = 500;
 
     //Permission arrays
-    private String[] locationPermissions;
-    private String[] cameraPermissions;
-    private String[] storagePermissions;
+    private String locationPermissions[];
+    private String cameraPermissions[];
+    private String storagePermissions[];
 
     private ProgressDialog progressDialog; //progress Dialog
     private FirebaseAuth firebaseAuth;
@@ -81,80 +76,93 @@ public class ProfileEditUserActivity extends AppCompatActivity implements Locati
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_profile_edit_user);
-
-        //Init UI views
-        backBtn = findViewById(R.id.backBtn);
-        gpsBtn = findViewById(R.id.gpsBtn);
-        profileIv = findViewById(R.id.profileIv);
-        nameEt = findViewById(R.id.nameEt);
-        phoneEt = findViewById(R.id.phoneEt);
-        countryEt = findViewById(R.id.countryEt);
-        zoneEt = findViewById(R.id.zoneEt);
-        cityEt = findViewById(R.id.cityEt);
-        addressEt = findViewById(R.id.addressEt);
-        updateBtn = findViewById(R.id.updateBtn);
-
-        //init permission arrays
-        locationPermissions = new String[]{Manifest.permission.ACCESS_FINE_LOCATION};
-        cameraPermissions = new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE};
-        storagePermissions = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE};
-
+        //setContentView(R.layout.activity_profile_edit_user);
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_profile_edit_user);
         //setup progress dialog
         progressDialog = new ProgressDialog(this);
         progressDialog.setTitle("Please Wait");
         progressDialog.setCanceledOnTouchOutside(false);
-
         firebaseAuth = FirebaseAuth.getInstance();
         checkUser();
 
-        //Button listeners
-        backBtn.setOnClickListener(new View.OnClickListener() {
+        binding.setClickHandle(new EditUserProfileClicks() {
             @Override
-            public void onClick(View view) {
+            public void editUserProfileBackbtn() {
                 onBackPressed();
             }
-        });
-        profileIv.setOnClickListener(new View.OnClickListener() {
+
             @Override
-            public void onClick(View view) {
-                //Pick image
-                showImagePickDialog();
-            }
-        });
-        gpsBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+            public void editUserProfileGpsBtnClick() {
                 //Detect location
                 if (checkLocationPermission()){
                     //Already allowed
                     detectLocation();
                 }else{
-                    //Not allowed request
+                    //Not allowed, request for location permission
                     requestLocationPermission();
                 }
             }
-        });
-        updateBtn.setOnClickListener(new View.OnClickListener() {
+
             @Override
-            public void onClick(View view) {
-                //Begins updating user info
+            public void editUserProfileImageBtnClick() {
+                //Show image pick dilaog
+                showImagePickDialog();
+            }
+
+            @Override
+            public void editUserProfileUpdateBtnClick() {
                 inputData();
             }
         });
 
+        //init permission arrays
+        locationPermissions = new String[]{Manifest.permission.ACCESS_FINE_LOCATION};
+        cameraPermissions = new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE};
+        storagePermissions = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE};
     }
+
     //Takes data from phone into db
     private String name, phone,country, zone, city, address;
-    private void inputData() {
-        name = nameEt.getText().toString().trim();
-        phone = phoneEt.getText().toString().trim();
-        country = countryEt.getText().toString().trim();
-        zone = zoneEt.getText().toString().trim();
-        city = cityEt.getText().toString().trim();
-        address = addressEt.getText().toString().trim();
-        updateProfile();
+    private boolean shopOpen;
 
+    private void inputData() {
+        name = binding.nameEt.getText().toString().trim();
+        phone = binding.phoneEt.getText().toString().trim();
+        country = binding.countryEt.getText().toString().trim();
+        zone = binding.zoneEt.getText().toString().trim();
+        city = binding.cityEt.getText().toString().trim();
+        address = binding.addressEt.getText().toString().trim();
+
+        //validate
+        if (TextUtils.isEmpty(name)) {
+            Toast.makeText(this, "Enter Name", Toast.LENGTH_SHORT).show();
+            binding.nameEt.requestFocus();
+            return;
+        }if (phone.length() < 8) {
+            binding.phoneEt.setError("Phone # should be 8 digits");
+        }if (TextUtils.isEmpty(phone)) {
+            Toast.makeText(this, "Enter phone Number", Toast.LENGTH_SHORT).show();
+            binding.phoneEt.requestFocus();
+            return;
+        }if (TextUtils.isEmpty(country)) {
+            Toast.makeText(this, "Enter Country", Toast.LENGTH_SHORT).show();
+            binding.countryEt.requestFocus();
+            return;
+        }if (TextUtils.isEmpty(zone)) {
+            Toast.makeText(this, "Enter Zone", Toast.LENGTH_SHORT).show();
+            binding.zoneEt.requestFocus();
+            return;
+        }if (TextUtils.isEmpty(city)) {
+            Toast.makeText(this, "Enter City", Toast.LENGTH_SHORT).show();
+            binding.cityEt.requestFocus();
+            return;
+        }if (TextUtils.isEmpty(address)) {
+            Toast.makeText(this, "Enter Address", Toast.LENGTH_SHORT).show();
+            binding.addressEt.requestFocus();
+            return;
+        }else {
+            updateProfile();
+        }
     }
 
     private void updateProfile() {
@@ -245,8 +253,8 @@ public class ProfileEditUserActivity extends AppCompatActivity implements Locati
                     }).addOnFailureListener(new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception e) {
+                    progressDialog.dismiss();
                     Toast.makeText(ProfileEditUserActivity.this,""+ e.getMessage(),Toast.LENGTH_SHORT).show();
-
                 }
             });
         }
@@ -288,19 +296,18 @@ public class ProfileEditUserActivity extends AppCompatActivity implements Locati
                             String uid = "" +ds.child("uid").getValue();
 
                             //
-                            nameEt.setText(name);
-                            countryEt.setText(country);
-                            nameEt.setText(name);
-                            zoneEt.setText(zone);
-                            cityEt.setText(city);
-                            addressEt.setText(address);
+                            binding.nameEt.setText(name);
+                            binding.countryEt.setText(country);
+                            binding.nameEt.setText(name);
+                            binding.zoneEt.setText(zone);
+                            binding.cityEt.setText(city);
+                            binding.addressEt.setText(address);
 
                             try{
-                                Picasso.get().load(profileImage).placeholder(R.drawable.ic_store_24).into(profileIv);
+                                Picasso.get().load(profileImage).placeholder(R.drawable.ic_store_24).into(binding.profileIv);
                             }catch(Exception e){
-                                profileIv.setImageResource(R.drawable.ic_person_24);
+                                binding.profileIv.setImageResource(R.drawable.ic_person_24);
                             }
-
                         }
                     }
                     @Override
@@ -312,7 +319,7 @@ public class ProfileEditUserActivity extends AppCompatActivity implements Locati
 
     private void showImagePickDialog() {
         //Options to display in dialog
-        String[] options = {"Camera","Gallery"};
+        String options[] = {"Camera","Gallery"};
         //Dialog
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Pick Image:")
@@ -340,7 +347,7 @@ public class ProfileEditUserActivity extends AppCompatActivity implements Locati
                             }
                         }
                     }
-                }).show();
+                }).create().show();
     }
 
     private void requestStoragePermission() {
@@ -398,9 +405,9 @@ public class ProfileEditUserActivity extends AppCompatActivity implements Locati
         return result;
     }
 
+    @SuppressLint("MissingPermission")
     private void detectLocation() {
         Toast.makeText(this,"Please Wait",Toast.LENGTH_SHORT).show();
-
         locationManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,0,0,this);
     }
@@ -427,10 +434,10 @@ public class ProfileEditUserActivity extends AppCompatActivity implements Locati
             String country = addresses.get(0).getCountryName();
 
             //set addresses
-            countryEt.setText(country);
-            zoneEt.setText(zone);
-            cityEt.setText(city);
-            addressEt.setText(address);
+            binding.countryEt.setText(country);
+            binding.zoneEt.setText(zone);
+            binding.cityEt.setText(city);
+            binding.addressEt.setText(address);
         }catch (Exception e){
             Toast.makeText(this,""+e.getMessage(),Toast.LENGTH_SHORT).show();
         }
@@ -507,21 +514,19 @@ public class ProfileEditUserActivity extends AppCompatActivity implements Locati
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        //Handle image pick result
-        if (resultCode == RESULT_OK){
-            if (requestCode == IMAGE_PICK_GALLERY_CODE){
-                //Picked from gallery
+        //handle image pick result
+        if (resultCode == RESULT_OK) {
+            if (requestCode == IMAGE_PICK_GALLERY_CODE) {
+                //picked from gallery
                 image_uri = data.getData();
-                //set to imageView
-                profileIv.setImageURI(image_uri);
-
-            }else if (requestCode == IMAGE_PICK_CAMERA_CODE){
-                profileIv.setImageURI(image_uri);
+                //now set the image to imageView
+                binding.profileIv.setImageURI(image_uri);
+            }else if (requestCode==IMAGE_PICK_CAMERA_CODE){
+                //picked from camera
+                binding.profileIv.setImageURI(image_uri);
             }
         }
-
-
-
         super.onActivityResult(requestCode, resultCode, data);
     }
+
 }

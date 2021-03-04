@@ -1,11 +1,18 @@
 package com.desperdartos.shoppingapp.models;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class ModelShop {
     private String uid, email, name, shopName,phone,deliveryFee,country,
             zone,city,address,latitude,longitude,timeStamp,accountType,
             online,shopOpen,profileImage;
 
-    //Empty Constructor
+    /*Empty Constructor
     public ModelShop() {
     }
 
@@ -164,7 +171,7 @@ public class ModelShop {
 
     public void setProfileImage(String profileImage) {
         this.profileImage = profileImage;
-    }
+    }*/
 }
 
 

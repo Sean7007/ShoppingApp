@@ -1,4 +1,4 @@
-package com.desperdartos.shoppingapp;
+package com.desperdartos.shoppingapp.filter;
 
 import android.widget.Filter;
 
@@ -7,15 +7,18 @@ import com.desperdartos.shoppingapp.models.ModelProduct;
 
 import java.util.ArrayList;
 
+import lombok.AllArgsConstructor;
+
+@AllArgsConstructor
 public class FilterProductUser  extends Filter {
 
         private AdapterProductUser adapter;
         private ArrayList<ModelProduct> filterList;
 
-        public FilterProductUser(AdapterProductUser adapter, ArrayList<ModelProduct> filterList){
+       /* public FilterProductUser(AdapterProductUser adapter, ArrayList<ModelProduct> filterList){
             this.adapter = adapter;
             this.filterList = filterList;
-        }
+        }*/
 
         @Override
         protected FilterResults performFiltering(CharSequence charSequence) {
@@ -41,7 +44,6 @@ public class FilterProductUser  extends Filter {
                 results.values = filteredModels;
             }else{
                 //Search filed empty, not searching return original list
-
                 results.count = filterList.size();
                 results.values = filterList;
             }

@@ -1,4 +1,4 @@
-package com.desperdartos.shoppingapp;
+package com.desperdartos.shoppingapp.activities;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -6,17 +6,15 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.text.TextUtils;
 import android.util.Patterns;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.desperdartos.shoppingapp.R;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.AuthResult;
@@ -84,17 +82,20 @@ public class LoginActivity extends AppCompatActivity {
     private void loginUser() {
         email = emailEt.getText().toString().trim();
         password = passwordEt.getText().toString().trim();
-
+        progressDialog.setMessage("Logging In...");
+        progressDialog.show();
         if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()){
-            Toast.makeText(this,"Invalid Email Pattern...", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Invalid Email Pattern", Toast.LENGTH_SHORT).show();
+            emailEt.setText("");
+            emailEt.requestFocus();
             return;
         }
         if (TextUtils.isEmpty(password)){
-            Toast.makeText(this,"Enter Password...",Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Enter Password", Toast.LENGTH_SHORT).show();
+            passwordEt.requestFocus();
             return;
         }
-        progressDialog.setMessage("Logging In...");
-        progressDialog.show();
+
         firebaseAuth.signInWithEmailAndPassword(email,password)
                 .addOnSuccessListener(new OnSuccessListener<AuthResult>() {
                     @Override

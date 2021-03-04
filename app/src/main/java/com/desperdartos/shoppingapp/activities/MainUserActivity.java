@@ -1,22 +1,21 @@
-package com.desperdartos.shoppingapp;
+package com.desperdartos.shoppingapp.activities;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.RecyclerView;
+import androidx.databinding.DataBindingUtil;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Adapter;
-import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
+import com.desperdartos.shoppingapp.R;
+import com.desperdartos.shoppingapp.adapters.AdapterOrderUser;
 import com.desperdartos.shoppingapp.adapters.AdapterShop;
+import com.desperdartos.shoppingapp.commands.MainUserActivityClicks;
+import com.desperdartos.shoppingapp.databinding.ActivityMainUserBinding;
+import com.desperdartos.shoppingapp.models.ModelOrderUser;
 import com.desperdartos.shoppingapp.models.ModelShop;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -33,94 +32,123 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class MainUserActivity extends AppCompatActivity {
-    //Variable Declaration
-    private TextView nameTv, emailTv, phoneTv, tabShopsTv,tabOrdersTv;
-    private ImageButton logoutBtn, editProfileBtn;
-    private ImageView profileIv;
-    private RelativeLayout shopsRl, ordersRl;
-    private RecyclerView shopsRv;
-
+    ActivityMainUserBinding binding;
     private FirebaseAuth firebaseAuth;
     private ProgressDialog progressDialog;
-
-    private ArrayList<ModelShop> shopsList;
+    private ArrayList<ModelShop> shopList;
     private AdapterShop adapterShop;
+    private ArrayList<ModelOrderUser> orderList;
+    private AdapterOrderUser adapterOrderUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main_user);
-
-        nameTv = findViewById(R.id.nameTv);
-        logoutBtn = findViewById(R.id.logoutBtn);
-        editProfileBtn = findViewById(R.id.editProfileBtn);
-        profileIv = findViewById(R.id.profileIv);
-        emailTv = findViewById(R.id.emailTv);
-        phoneTv = findViewById(R.id.phoneTv);
-        tabShopsTv = findViewById(R.id.tabShopsTv);
-        tabOrdersTv = findViewById(R.id.tabOrdersTv);
-        shopsRl = findViewById(R.id.shopsRl);
-        ordersRl = findViewById(R.id.ordersRl);
-        shopsRv = findViewById(R.id.shopsRv);
+        //setContentView(R.layout.activity_main_user);
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_main_user);
 
         progressDialog = new ProgressDialog(this);
         progressDialog.setTitle("Please wait");
         progressDialog.setCanceledOnTouchOutside(false);
         firebaseAuth = FirebaseAuth.getInstance();
         checkUser();
+        showShopsUI(); //At first shops UI
 
-        showShopsUI();
-        logoutBtn.setOnClickListener(new View.OnClickListener() {
+        binding.setClickHandle(new MainUserActivityClicks() {
             @Override
-            public void onClick(View view) {
+            public void logoutUser() {
+                //signOut
                 makeMeOffline();
             }
-        });
 
-        editProfileBtn.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                //Allows users to edit their profile
+            public void editUserProfile() {
+                //for edit user profile...now open edit activity
                 startActivity(new Intent(MainUserActivity.this, ProfileEditUserActivity.class));
+            }
 
-            }
-        });
-        tabShopsTv.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                showShopsUI();
-            }
-        });
-        tabOrdersTv.setOnClickListener(new View.OnClickListener() {
+            public void shopsTabClick() {
+                //show shops
+                showShopsUI();            }
+
             @Override
-            public void onClick(View view) {
+            public void orderTabsClick() {
+                //Show order
                 showOrdersUI();
+                loadOrders();
+            }
+
+            @Override
+            public void settingsBtnClicks() {
+                startActivity(new Intent(MainUserActivity.this,SettingsActivity.class));
+            }
+        });
+
+    }
+
+    private void loadOrders() {
+        orderList = new ArrayList<>();
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Users");
+        reference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                orderList.clear();
+                for (final DataSnapshot ds : snapshot.getChildren()) {
+                    String uid = "" + ds.getRef().getKey();
+                    DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Users").child(uid).child("Orders");
+                    reference.orderByChild("orderBy").equalTo(firebaseAuth.getUid())
+                            .addValueEventListener(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                    if (ds.exists()) {
+                                        for (DataSnapshot ds : snapshot.getChildren()) {
+                                            ModelOrderUser modelOrderUser = ds.getValue(ModelOrderUser.class);
+                                            //now add to list
+                                            orderList.add(modelOrderUser);
+                                        }
+                                        //setup adapter
+                                        adapterOrderUser = new AdapterOrderUser(MainUserActivity.this,orderList);
+                                        binding.orderRv.setAdapter(adapterOrderUser);
+                                    }
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError error) {
+
+                                }
+                            });
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
             }
         });
     }
 
     //At start show shops Ui
     private void showShopsUI() {
-        shopsRl.setVisibility(View.VISIBLE);
-        ordersRl.setVisibility(View.GONE);
+        binding.shopsRl.setVisibility(View.VISIBLE);
+        binding.ordersRl.setVisibility(View.GONE);
 
-        tabShopsTv.setTextColor(getResources().getColor(R.color.colorBlack));
-        tabShopsTv.setBackgroundResource(R.drawable.shape_rec04);
+        binding.tabShopsTv.setTextColor(getResources().getColor(R.color.colorBlack));
+        binding.tabShopsTv.setBackgroundResource(R.drawable.shape_rec04);
 
-        tabOrdersTv.setTextColor(getResources().getColor(R.color.white));
-        tabOrdersTv.setBackgroundColor(getResources().getColor(android.R.color.transparent));
+        binding.tabOrdersTv.setTextColor(getResources().getColor(R.color.white));
+        binding.tabOrdersTv.setBackgroundColor(getResources().getColor(android.R.color.transparent));
     }
 
-    // show ORDERS Ui
+    // show ORDERS UI
     private void showOrdersUI() {
-        shopsRl.setVisibility(View.GONE);
-        ordersRl.setVisibility(View.VISIBLE);
+        binding.shopsRl.setVisibility(View.GONE);
+        binding.ordersRl.setVisibility(View.VISIBLE);
 
-        tabOrdersTv.setTextColor(getResources().getColor(R.color.colorBlack));
-        tabOrdersTv.setBackgroundResource(R.drawable.shape_rec04);
+        binding.tabOrdersTv.setTextColor(getResources().getColor(R.color.colorBlack));
+        binding.tabOrdersTv.setBackgroundResource(R.drawable.shape_rec04);
 
-        tabShopsTv.setTextColor(getResources().getColor(R.color.white));
-        tabShopsTv.setBackgroundColor(getResources().getColor(android.R.color.transparent));
+        binding.tabShopsTv.setTextColor(getResources().getColor(R.color.white));
+        binding.tabShopsTv.setBackgroundColor(getResources().getColor(android.R.color.transparent));
     }
 
     //Method that signs out user
@@ -177,13 +205,13 @@ public class MainUserActivity extends AppCompatActivity {
                             String city = "" +ds.child("city").getValue();
 
                             //Set user data
-                            nameTv.setText(name);
-                            emailTv.setText(email);
-                            phoneTv.setText(phone);
+                            binding.nameTv.setText(name);
+                            binding.emailTv.setText(email);
+                            binding.phoneTv.setText(phone);
                             try{
-                                Picasso.get().load(profileImage).placeholder(R.drawable.ic_person_24).into(profileIv);
+                                Picasso.get().load(profileImage).placeholder(R.drawable.ic_person_24).into(binding.profileIv);
                             }catch (Exception e){
-                                profileIv.setImageResource(R.drawable.ic_person_24);
+                                binding.profileIv.setImageResource(R.drawable.ic_person_24);
                             }
                             //load only shops on that are in the city of user
                             loadShops(city);
@@ -197,9 +225,9 @@ public class MainUserActivity extends AppCompatActivity {
                 });
     }
 
-    private void loadShops(String city) {
+    private void loadShops(final String city) {
         //init list
-        shopsList = new ArrayList<>();
+        shopList = new ArrayList<>();
 
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Users");
         ref.orderByChild("accountType").equalTo("Seller")
@@ -207,23 +235,22 @@ public class MainUserActivity extends AppCompatActivity {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         //Clear list before adding
-                        shopsList.clear();
+                        shopList.clear();
                         for (DataSnapshot ds: snapshot.getChildren()){
                             ModelShop modelShop = ds.getValue(ModelShop.class);
                             String shopCity = ""+ds.child("city").getValue();
 
                             //Show only user city shops
                             if (shopCity.equals(city)){
-                                shopsList.add(modelShop);
+                                shopList.add(modelShop);
                             }
                             //if you want to display all shops, skip if statement and add this
                             // shopsList.add(modelShop);
                         }
                         //setup adapter
-                        adapterShop = new AdapterShop(MainUserActivity.this, shopsList);
+                        adapterShop = new AdapterShop(MainUserActivity.this, shopList);
                         //set adapter to recyclerView
-                        shopsRv.setAdapter(adapterShop);
-
+                        binding.shopsRv.setAdapter(adapterShop);
                     }
 
                     @Override

@@ -3,6 +3,10 @@
     package="com.desperdartos.shoppingapp"
     android:installLocation="auto">
 
+
+    <uses-feature
+        android:name="android.hardware.camera2"/>
+
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -16,19 +20,19 @@
         android:roundIcon="@drawable/shop"
         android:supportsRtl="true"
         android:theme="@style/Theme.ShoppingApp.NoActionBar">
-        <activity android:name=".ShopDetailsActivity"
+        <activity android:name=".activities.ShopDetailsActivity"
             android:windowSoftInputMode="stateHidden"/>
         <activity android:name=".activities.EditProductActivity" />
         <activity android:name=".activities.AddProductActivity" />
-        <activity android:name=".ProfileEditSellerActivity" />
-        <activity android:name=".ProfileEditUserActivity" />
-        <activity android:name=".MainUserActivity" />
-        <activity android:name=".MainSellerActivity" />
-        <activity android:name=".ForgotPasswordActivity" />
-        <activity android:name=".RegisterUserActivity" />
-        <activity android:name=".RegisterSellerActivity" />
-        <activity android:name=".LoginActivity" />
-        <activity android:name=".SplashActivity">
+        <activity android:name=".activities.ProfileEditSellerActivity" />
+        <activity android:name=".activities.ProfileEditUserActivity" />
+        <activity android:name=".activities.MainUserActivity" />
+        <activity android:name=".activities.MainSellerActivity" />
+        <activity android:name=".activities.ForgotPasswordActivity" />
+        <activity android:name=".activities.RegisterUserActivity" />
+        <activity android:name=".activities.RegisterSellerActivity" />
+        <activity android:name=".activities.LoginActivity" />
+        <activity android:name=".activities.SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -38,6 +42,16 @@
         <activity
             android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
             android:theme="@style/Base.Theme.AppCompat" />
+
+        <!--        resister service to allow run background-->
+        <service
+            android:name=".notification.MyFirebaseMessaging"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
     </application>
 
 </manifest>

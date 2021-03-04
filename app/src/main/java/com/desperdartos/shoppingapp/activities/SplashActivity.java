@@ -1,4 +1,4 @@
-package com.desperdartos.shoppingapp;
+package com.desperdartos.shoppingapp.activities;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -9,6 +9,7 @@ import android.os.Handler;
 import android.view.Window;
 import android.view.WindowManager;
 
+import com.desperdartos.shoppingapp.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -22,13 +23,12 @@ public class SplashActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        firebaseAuth = FirebaseAuth.getInstance();
         //Makes a fullscreen
         getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_splash);
 
-        firebaseAuth = FirebaseAuth.getInstance();
 
         //Start login activity after 4secs
         new Handler().postDelayed(new Runnable() {
@@ -45,7 +45,7 @@ public class SplashActivity extends AppCompatActivity {
                 }
 
             }
-        }, 4000);
+        }, 1000);
     }
 
     private void checkUserType() {

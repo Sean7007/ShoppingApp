@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.databinding.DataBindingUtil;
 
 import android.Manifest;
 import android.app.ProgressDialog;
@@ -29,6 +30,8 @@ import android.widget.Toast;
 
 import com.desperdartos.shoppingapp.Constants;
 import com.desperdartos.shoppingapp.R;
+import com.desperdartos.shoppingapp.commands.EditProductActivityClicks;
+import com.desperdartos.shoppingapp.databinding.ActivityEditProductBinding;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -46,15 +49,16 @@ import com.squareup.picasso.Picasso;
 import java.util.HashMap;
 
 public class EditProductActivity extends AppCompatActivity {
+    ActivityEditProductBinding binding;
     private String productId;
 
-    //UI views
+    /*UI views
     private ImageButton backBtn;
     private ImageView productIconIv;
     private EditText titleEt, descriptionEt, quantityEt, priceEt, discountedNotePriceEt, discountedPriceEt;
     private TextView categoryTv;
     private SwitchCompat discountSwitch;
-    private Button updateProductBtn;
+    private Button updateProductBtn;*/
 
     //Permission Constants
     private static final int CAMERA_REQUEST_CODE = 200;
@@ -74,74 +78,59 @@ public class EditProductActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_edit_product);
+        //setContentView(R.layout.activity_edit_product);
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_edit_product);
 
         //get id of product from intent
         productId = getIntent().getStringExtra("productId");
-        //init views
-        backBtn = findViewById(R.id.backBtn);
-        productIconIv = findViewById(R.id.productIconIv);
-        titleEt = findViewById(R.id.titleEt);
-        descriptionEt = findViewById(R.id.descriptionEt);
-        quantityEt = findViewById(R.id.quantityEt);
-        priceEt = findViewById(R.id.priceEt);
-        categoryTv = findViewById(R.id.categoryTv);
-        discountSwitch = findViewById(R.id.discountSwitch);
-        updateProductBtn = findViewById(R.id.updateProductBtn);
-        discountedPriceEt = findViewById(R.id.discountedPriceEt);
-        discountedNotePriceEt = findViewById(R.id.discountedNotePriceEt);
-        backBtn = findViewById(R.id.backBtn);
 
+
+        firebaseAuth = FirebaseAuth.getInstance();
+        loadProductDetails();
         progressDialog = new ProgressDialog(this);
         progressDialog.setTitle("Please Wait");
         progressDialog.setCanceledOnTouchOutside(false);
-
-        firebaseAuth = FirebaseAuth.getInstance();
-         loadProductDetails();
 
         //init permissions arrays
         cameraPermissions = new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE};
         storagePermissions = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE};
 
-        discountSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        binding.discountSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
-                if (isChecked){
-                    //Checked->>Show discount price
-                    discountedPriceEt.setVisibility(View.VISIBLE);
-                    discountedNotePriceEt.setVisibility(View.VISIBLE);
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    //checked,,show discount price Et discount note Et....
+                    binding.discountedPriceEt.setVisibility(View.VISIBLE);
+                    binding.discountedNotePriceEt.setVisibility(View.VISIBLE);
 
-                }else{
-                    //Unchecked->> Hide discountPrice
-                    discountedPriceEt.setVisibility(View.GONE);
-                    discountedNotePriceEt.setVisibility(View.GONE);
+                } else {
+                    //unchecked   show hide discount price Et discount note Et.....
+                    binding.discountedPriceEt.setVisibility(View.GONE);
+                    binding.discountedNotePriceEt.setVisibility(View.GONE);
                 }
             }
         });
-        productIconIv.setOnClickListener(new View.OnClickListener() {
+        binding.setClickHandle(new EditProductActivityClicks() {
             @Override
-            public void onClick(View view) {
-                //Show dialog to pick image
+            public void productIconClick() {
                 showImagePickDialog();
             }
-        });
-        categoryTv.setOnClickListener(new View.OnClickListener() {
+
             @Override
-            public void onClick(View view) {
-                //Pick category
+            public void categoryTvClick() {
                 categoryDialog();
             }
-        });
-        updateProductBtn.setOnClickListener(new View.OnClickListener() {
+
             @Override
-            public void onClick(View view) {
-                //1.input data 2.validate data 3. Update data
+            public void editProductBtn() {
+                //1)input data
+                //2)validate data
+                //3)update data to database
                 inputData();
             }
-        });
-        backBtn.setOnClickListener(new View.OnClickListener() {
+
             @Override
-            public void onClick(View view) {
+            public void backBtnClick() {
                 onBackPressed();
             }
         });
@@ -170,29 +159,26 @@ public class EditProductActivity extends AppCompatActivity {
 
                         //Set data to views
                         if (discountAvailable.equals("true")){
-                            discountSwitch.setChecked(true);
-
-                            discountedPriceEt.setVisibility(View.VISIBLE);
-                            discountedNotePriceEt.setVisibility(View.VISIBLE);
+                            binding.discountSwitch.setChecked(true);
+                            binding.discountedPriceEt.setVisibility(View.VISIBLE);
+                            binding.discountedNotePriceEt.setVisibility(View.VISIBLE);
                         }else{
-                            discountSwitch.setChecked(false);
-
-                            discountedPriceEt.setVisibility(View.GONE);
-                            discountedNotePriceEt.setVisibility(View.GONE);
+                            binding.discountSwitch.setChecked(false);
+                            binding.discountedPriceEt.setVisibility(View.GONE);
+                            binding.discountedNotePriceEt.setVisibility(View.GONE);
                         }
-                        titleEt.setText(productTitle);
-                        descriptionEt.setText(productDescription);
-                        categoryTv.setText(productCategory);
-                        discountedNotePriceEt.setText(discountNote);
-                        quantityEt.setText(productQuantity);
-                        priceEt.setText(originalPrice);
-                        discountedPriceEt.setText(discountPrice);
+                        binding.titleEt.setText(productTitle);
+                        binding.descriptionEt.setText(productDescription);
+                        binding.categoryTv.setText(productCategory);
+                        binding.discountedNotePriceEt.setText(discountNote);
+                        binding.quantityEt.setText(productQuantity);
+                        binding.priceEt.setText(originalPrice);
+                        binding.discountedPriceEt.setText(discountPrice);
 
                         try{
-                            Picasso.get().load(productIcon).placeholder(R.drawable.ic_shopping_cart_white).into(productIconIv);
+                            Picasso.get().load(productIcon).placeholder(R.drawable.ic_shopping_cart_white).into(binding.productIconIv);
                         }catch (Exception e){
-                            productIconIv.setImageResource(R.drawable.ic_shopping_cart_white);
-
+                            binding.productIconIv.setImageResource(R.drawable.ic_shopping_cart_white);
                         }
                     }
 
@@ -207,29 +193,33 @@ public class EditProductActivity extends AppCompatActivity {
     private boolean discountAvailable = false;
     private void inputData() {
         //1.Input Data
-        productTitle = titleEt.getText().toString().trim();
-        productDescription = descriptionEt.getText().toString().trim();
-        productCategory = categoryTv.getText().toString().trim();
-        productQuantity = quantityEt.getText().toString().trim();
-        originalPrice = priceEt.getText().toString().trim();
-        discountAvailable = discountSwitch.isChecked();
+        productTitle = binding.titleEt.getText().toString().trim();
+        productDescription = binding.descriptionEt.getText().toString().trim();
+        productCategory = binding.categoryTv.getText().toString().trim();
+        productQuantity = binding.quantityEt.getText().toString().trim();
+        originalPrice = binding.priceEt.getText().toString().trim();
+        discountAvailable = binding.discountSwitch.isChecked();
 
         //2.Validate Data
         if (TextUtils.isEmpty(productTitle)){
-            Toast.makeText(this,"Title is required",Toast.LENGTH_SHORT).show();
-            return;  //Dont process further
+            binding.titleEt.setError("Title is Required");
+            binding.titleEt.requestFocus();
+            return;  //Don't process further
         }if (TextUtils.isEmpty(productCategory)){
-            Toast.makeText(this,"Category is required",Toast.LENGTH_SHORT).show();
+            binding.categoryTv.setError("Category is Required");
+            binding.categoryTv.requestFocus();
             return;
         }if (TextUtils.isEmpty(originalPrice)){
-            Toast.makeText(this,"Price is required",Toast.LENGTH_SHORT).show();
+            binding.priceEt.setError("Original Price is Required");
+            binding.priceEt.requestFocus();
             return;
         }if (discountAvailable){
             //Product wit discount
-            discountPrice = discountedPriceEt.getText().toString().trim();
-            discountNote = discountedNotePriceEt.getText().toString().trim();
+            discountPrice = binding.discountedPriceEt.getText().toString().trim();
+            discountNote = binding.discountedNotePriceEt.getText().toString().trim();
             if (TextUtils.isEmpty(discountPrice)){
-                Toast.makeText(this,"Discount Price is required",Toast.LENGTH_SHORT).show();
+                binding.discountedPriceEt.setError("Discount  Price is Required");
+                binding.discountedPriceEt.requestFocus();
                 return;
             }
         }else{
@@ -242,8 +232,9 @@ public class EditProductActivity extends AppCompatActivity {
     }
 
     private void updateProduct() {
-        progressDialog.setMessage("Updating Product");
         progressDialog.show();
+        progressDialog.setMessage("Updating Product");
+        final String timestamp = "" + System.currentTimeMillis();
 
         if (image_uri == null){
             //Update without image
@@ -257,6 +248,7 @@ public class EditProductActivity extends AppCompatActivity {
             hashMap.put("discountPrice",""+discountPrice);
             hashMap.put("discountNote",""+discountNote);
             hashMap.put("discountAvailable",""+discountAvailable);
+            hashMap.put("timestamp", "" + timestamp);
 
             //update db
             DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Users");
@@ -313,6 +305,7 @@ public class EditProductActivity extends AppCompatActivity {
                                                 //update success
                                                 progressDialog.dismiss();
                                                 Toast.makeText(EditProductActivity.this,"Product Updated!", Toast.LENGTH_SHORT).show();
+                                                clearData();
                                             }
                                         }).addOnFailureListener(new OnFailureListener() {
                                     @Override
@@ -320,7 +313,6 @@ public class EditProductActivity extends AppCompatActivity {
                                         //update failed
                                         progressDialog.dismiss();
                                         Toast.makeText(EditProductActivity.this,""+e.getMessage(), Toast.LENGTH_SHORT).show();
-
                                     }
                                 });
                             }
@@ -331,32 +323,43 @@ public class EditProductActivity extends AppCompatActivity {
                     //Upload failed
                     progressDialog.dismiss();
                     Toast.makeText(EditProductActivity.this,""+e.getMessage(), Toast.LENGTH_SHORT).show();
-
                 }
             });
 
         }
+    }
+    private void clearData() {
+        //clear data after uploading product
+        binding.titleEt.setText("");
+        binding.descriptionEt.setText("");
+        binding.categoryTv.setText("");
+        binding.quantityEt.setText("");
+        binding.priceEt.setText("");
+        binding.discountedPriceEt.setText("");
+        binding.discountedNotePriceEt.setText("");
+        binding.productIconIv.setImageResource(R.drawable.ic_baseline_add_shopping_cart_24);
+        image_uri = null;
     }
 
     private void categoryDialog() {
         //Dialog
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Product Category")
-                .setItems(Constants.productCategories, new DialogInterface.OnClickListener() {
+                .setItems(Constants.PRODUCT_CATEGORY, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         //Pick Category
-                        String category = Constants.productCategories[i];
+                        String category = Constants.PRODUCT_CATEGORY[i];
 
                         //Sets picked category
-                        categoryTv.setText(category);
+                        binding.categoryTv.setText(category);
                     }
-                }).show();
+                }).create().show();
     }
 
     private void showImagePickDialog() {
         //options to display
-        String[] options = {"Camera","Gallery"};
+        String options[] = {"Camera","Gallery"};
         //Dialog
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Pick Image")
@@ -384,8 +387,7 @@ public class EditProductActivity extends AppCompatActivity {
                             }
                         }
                     }
-                })
-                .show();
+                }).create().show();
     }
 
     private void pickFromGallery() {
@@ -398,8 +400,8 @@ public class EditProductActivity extends AppCompatActivity {
     private void pickFromCamera() {
         //Intent to pick image from camera
         ContentValues contentValues = new ContentValues();
-        contentValues.put(MediaStore.Images.Media.TITLE, "Temp_Image_Title");
-        contentValues.put(MediaStore.Images.Media.DESCRIPTION, "Temp_Image_Description");
+        contentValues.put(MediaStore.Images.Media.TITLE, "Image_Title");
+        contentValues.put(MediaStore.Images.Media.DESCRIPTION, "Image_Description");
 
         image_uri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues);
 
@@ -474,10 +476,10 @@ public class EditProductActivity extends AppCompatActivity {
                 image_uri = data.getData();
 
                 //set image
-                productIconIv.setImageURI(image_uri);
+                binding.productIconIv.setImageURI(image_uri);
             }else if(requestCode == IMAGE_PICK_CAMERA_CODE){
                 //image picked from camera
-                productIconIv.setImageURI(image_uri);
+                binding.productIconIv.setImageURI(image_uri);
 
             }
         }

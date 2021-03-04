@@ -18,8 +18,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.desperdartos.shoppingapp.FilterProduct;
-import com.desperdartos.shoppingapp.FilterProductUser;
+import com.desperdartos.shoppingapp.filter.FilterProduct;
 import com.desperdartos.shoppingapp.R;
 import com.desperdartos.shoppingapp.activities.EditProductActivity;
 import com.desperdartos.shoppingapp.models.ModelProduct;
@@ -29,21 +28,26 @@ import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
+import lombok.AllArgsConstructor;
+
+@AllArgsConstructor
 public class AdapterProductSeller extends RecyclerView.Adapter<AdapterProductSeller.HolderProductSeller> implements Filterable {
 
     private Context context;
     public ArrayList<ModelProduct> productList,filterList;
     private FilterProduct filter;
+    String image_path;
 
     public AdapterProductSeller(Context context, ArrayList<ModelProduct> productList){
         this.context = context;
         this.productList = productList;
         this.filterList = productList;
-
     }
 
     @NonNull
@@ -66,6 +70,7 @@ public class AdapterProductSeller extends RecyclerView.Adapter<AdapterProductSel
         String productCategory = modelProduct.getProductCategory();
         String productDescription = modelProduct.getProductDescription();
         String icon = modelProduct.getProductIcon();
+        image_path = icon;
         String quantity = modelProduct.getProductQuantity();
         String title = modelProduct.getProductTitle();
         String timestamp = modelProduct.getTimestamp();
@@ -75,8 +80,8 @@ public class AdapterProductSeller extends RecyclerView.Adapter<AdapterProductSel
         holder.titleTv.setText(title);
         holder.quantityTv.setText(quantity);
         holder.discountNoteTv.setText(discountNote);
-        holder.discountPriceTv.setText("P"+discountPrice);
-        holder.originalPriceTv.setText("P"+originalPrice);
+        holder.discountPriceTv.setText(""+discountPrice);
+        holder.originalPriceTv.setText(""+originalPrice);
 
         if (discountAvailable.equals("true")){
             //Product is on discount
@@ -88,6 +93,7 @@ public class AdapterProductSeller extends RecyclerView.Adapter<AdapterProductSel
             //Product is not on discount
             holder.discountPriceTv.setVisibility(View.GONE);
             holder.discountNoteTv.setVisibility(View.GONE);
+            holder.originalPriceTv.setPaintFlags(0);
         }
         try{
             Picasso.get().load(icon).placeholder(R.drawable.ic_baseline_add_shopping_cart_24).into(holder.productIconTv);
@@ -106,7 +112,7 @@ public class AdapterProductSeller extends RecyclerView.Adapter<AdapterProductSel
     //Here modelProduct contains of clicked product
     private void detailsBottomSheet(ModelProduct modelProduct) {
         //Bottom sheet
-        BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(context);
+        final BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(context);
         View view = LayoutInflater.from(context).inflate(R.layout.bs_product_details_seller,null);
         bottomSheetDialog.setContentView(view);
 
@@ -124,7 +130,7 @@ public class AdapterProductSeller extends RecyclerView.Adapter<AdapterProductSel
         TextView originalPriceTv = view.findViewById(R.id.originalPriceTv);
 
         //Get Data
-        String id = modelProduct.getProductId();
+        final String id = modelProduct.getProductId();
         String uid = modelProduct.getUid();
         String discountAvailable = modelProduct.getDiscountAvailable();
         String discountNote = modelProduct.getDiscountNote();
@@ -133,7 +139,7 @@ public class AdapterProductSeller extends RecyclerView.Adapter<AdapterProductSel
         String productDescription = modelProduct.getProductDescription();
         String icon = modelProduct.getProductIcon();
         String quantity = modelProduct.getProductQuantity();
-        String title = modelProduct.getProductTitle();
+        final String title = modelProduct.getProductTitle();
         String timestamp = modelProduct.getTimestamp();
         String originalPrice = modelProduct.getOriginalPrice();
 
@@ -142,9 +148,9 @@ public class AdapterProductSeller extends RecyclerView.Adapter<AdapterProductSel
         descriptionTv.setText(productDescription);
         categoryTv.setText(productCategory);
         quantityTv.setText(quantity);
-        discountNoteTv.setText(discountNote);
-        discountedPriceTv.setText("P"+discountPrice);
-        originalPriceTv.setText("P"+originalPrice);
+        discountNoteTv.setText(discountNote + "%" + "OFF");
+        discountedPriceTv.setText(""+discountPrice);
+        originalPriceTv.setText(""+originalPrice);
 
         if (discountAvailable.equals("true")){
             //Product is on discount
@@ -168,7 +174,6 @@ public class AdapterProductSeller extends RecyclerView.Adapter<AdapterProductSel
         editBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                bottomSheetDialog.dismiss();
                 //Open edit product activity
                 Intent intent = new Intent(context, EditProductActivity.class);
                 intent.putExtra("productId", id);
@@ -180,7 +185,6 @@ public class AdapterProductSeller extends RecyclerView.Adapter<AdapterProductSel
         deleteBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                bottomSheetDialog.dismiss();
                 //show delete confirm dialog
                 AlertDialog.Builder builder = new AlertDialog.Builder(context);
                 builder.setTitle("Delete")
@@ -190,6 +194,7 @@ public class AdapterProductSeller extends RecyclerView.Adapter<AdapterProductSel
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 //Delete
                                 deleteProduct(id);//ID-is product id
+                                bottomSheetDialog.dismiss();
                             }
                         }).setNegativeButton("No", new DialogInterface.OnClickListener() {
                     @Override
@@ -218,14 +223,28 @@ public class AdapterProductSeller extends RecyclerView.Adapter<AdapterProductSel
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
-                        //Product deleted
-                        Toast.makeText(context,"Product deleted!",Toast.LENGTH_SHORT).show();
+                        //product deleted
+                        //now delete database storage image
+                        StorageReference reference1 = FirebaseStorage.getInstance().getReferenceFromUrl(image_path);//this is the image url..here image url is image path
+                        reference1.delete()
+                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        //product image deleted...
+                                        Toast.makeText(context, "Product deleted!", Toast.LENGTH_SHORT).show();
+                                    }
+                                }).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+
+                            }
+                        });
                     }
                 }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
-                //Failed to delete
-                Toast.makeText(context,"" +e.getMessage(),Toast.LENGTH_SHORT).show();
+                //product delete failed
+                Toast.makeText(context, "Product delete failed : " + e.getMessage(), Toast.LENGTH_LONG).show();
             }
         });
     }

@@ -1,4 +1,4 @@
-package com.desperdartos.shoppingapp;
+package com.desperdartos.shoppingapp.activities;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -6,6 +6,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.databinding.DataBindingUtil;
 
 import android.Manifest;
 import android.app.ProgressDialog;
@@ -24,14 +25,10 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.util.Patterns;
-import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
+import com.desperdartos.shoppingapp.R;
+import com.desperdartos.shoppingapp.databinding.ActivityRegisterSellerBinding;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -48,14 +45,7 @@ import java.util.List;
 import java.util.Locale;
 
 public class RegisterSellerActivity extends AppCompatActivity implements LocationListener {
-
-    //Variables Declaration
-    private ImageButton backBtn, gpsBtn;
-    private Button registerBtn;
-    private ImageView profileIv;
-    private EditText nameEt,shopNameEt, phoneEt,deliveryEt, countryEt, zoneEt, cityEt,addressEt, emailEt, passwordEt, cPasswordEt;
-    private TextView registerSellerTv;
-
+    ActivityRegisterSellerBinding binding;
     //Permission Constraints
     private static final int LOCATION_REQUEST_CODE = 100;
     private static final int CAMERA_REQUEST_CODE = 200;
@@ -64,12 +54,12 @@ public class RegisterSellerActivity extends AppCompatActivity implements Locatio
     private static final int IMAGE_PICK_CAMERA_CODE = 500;
 
     //Permission Arrays
-    private String[] locationPermissions;
-    private String[] cameraPermissions;
-    private String[] storagePermissions;
+    private String locationPermissions[];
+    private String cameraPermissions[];
+    private String storagePermissions[];
 
     private LocationManager locationManager;
-    private double latitude=0.0, longitude=0.0;
+    private double latitude, longitude;
 
     private FirebaseAuth firebaseAuth;
     private ProgressDialog progressDialog;
@@ -80,27 +70,8 @@ public class RegisterSellerActivity extends AppCompatActivity implements Locatio
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_register_seller);
-        //init ui views
-        backBtn = findViewById(R.id.backBtn);
-        gpsBtn = findViewById(R.id.gpsBtn);
-
-        profileIv = findViewById(R.id.profileIv);
-        phoneEt = findViewById(R.id.phoneEt);
-        nameEt = findViewById(R.id.nameEt);
-        shopNameEt = findViewById(R.id.shopNameEt);
-        deliveryEt = findViewById(R.id.deliveryEt);
-
-        countryEt = findViewById(R.id.countryEt);
-        zoneEt = findViewById(R.id.zoneEt);
-        cityEt = findViewById(R.id.cityEt);
-        addressEt = findViewById(R.id.addressEt);
-
-        emailEt = findViewById(R.id.emailEt);
-        passwordEt = findViewById(R.id.passwordEt);
-        cPasswordEt = findViewById(R.id.cPasswordEt);
-        registerBtn = findViewById(R.id.registerBtn);
-        registerSellerTv = findViewById(R.id.registerSellerTv);
+        //setContentView(R.layout.activity_register_seller);
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_register_seller);
 
         //init permissions array
         locationPermissions = new String[]{Manifest.permission.ACCESS_FINE_LOCATION};
@@ -112,37 +83,34 @@ public class RegisterSellerActivity extends AppCompatActivity implements Locatio
         progressDialog.setTitle("Please Wait");
         progressDialog.setCanceledOnTouchOutside(false);
 
-        gpsBtn.setOnClickListener(new View.OnClickListener() {
+        binding.setClickHandle(new com.desperdartos.shoppingapp.commands.RegisterSellerActivity() {
             @Override
-            public void onClick(View view) {
-                //Detect Current location
-                if (checkLocationPermission()){
-                    //Already Allowed
+            public void sellerBackBtnClick() {
+                onBackPressed();
+            }
+
+            @Override
+            public void sellerGpsBtnClick() {
+                //Detect current location
+                if(checkLocationPermission()){
+                    //Already allowed so
                     detectLocation();
                 }else{
-                    //Not allowed,request
+                    //Not allowed request for location permssion
                     requestLocationPermission();
                 }
             }
-        });
-        profileIv.setOnClickListener(new View.OnClickListener() {
+
             @Override
-            public void onClick(View view) {
-                //Pick Image
+            public void sellerProfileIvClick() {
+                //Pick image
                 showImagePickDialog();
             }
-        });
-        backBtn.setOnClickListener(new View.OnClickListener() {
+
             @Override
-            public void onClick(View view) {
-                onBackPressed();
-            }
-        });
-        registerBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //Register User
-                inputData(); //Takes all Seller info
+            public void sellerRegisterBtnClick() {
+                //register seller
+                inputData();
             }
         });
     }
@@ -150,54 +118,86 @@ public class RegisterSellerActivity extends AppCompatActivity implements Locatio
     //Var declaration
     private String fullName, shopName, phoneNumber, deliveryFee, country, zone, city, address, email, password, confirmPassword;
     private void inputData() {
-        fullName = nameEt.getText().toString().trim();
-        shopName = shopNameEt.getText().toString().trim();
-        phoneNumber = phoneEt.getText().toString().trim();
-        deliveryFee = deliveryEt.getText().toString().trim();
-        country = countryEt.getText().toString().trim();
-        zone = zoneEt.getText().toString().trim();
-        city = cityEt.getText().toString().trim();
-        address = addressEt.getText().toString().trim();
-        email = emailEt.getText().toString().trim();
-        password = passwordEt.getText().toString().trim();
-        confirmPassword = cPasswordEt.getText().toString().trim();
+        fullName = binding.nameEt.getText().toString().trim();
+        shopName = binding.shopNameEt.getText().toString().trim();
+        phoneNumber = binding.phoneEt.getText().toString().trim();
+        deliveryFee = binding.deliveryEt.getText().toString().trim();
+        country = binding.countryEt.getText().toString().trim();
+        zone = binding.zoneEt.getText().toString().trim();
+        city = binding.cityEt.getText().toString().trim();
+        address = binding.addressEt.getText().toString().trim();
+        email = binding.emailEt.getText().toString().trim();
+        password = binding.passwordEt.getText().toString().trim();
+        confirmPassword = binding.cPasswordEt.getText().toString().trim();
 
         //Validate Data
         if (TextUtils.isEmpty(fullName)){
             Toast.makeText(this, "Enter Name!",Toast.LENGTH_SHORT).show();
+            binding.nameEt.requestFocus();
             return;
         }
         if (TextUtils.isEmpty(shopName)){
             Toast.makeText(this, "Enter Shop Name!",Toast.LENGTH_SHORT).show();
+            binding.shopNameEt.requestFocus();
             return;
         }if (TextUtils.isEmpty(phoneNumber)){
             Toast.makeText(this, "Enter Phone #",Toast.LENGTH_SHORT).show();
+            binding.phoneEt.requestFocus();
             return;
+        }if (phoneNumber.length() < 8) {
+            binding.phoneEt.setError("phone number should be 8 digits");
         }if (TextUtils.isEmpty(deliveryFee)){
             Toast.makeText(this, "Enter Delivery Fee!",Toast.LENGTH_SHORT).show();
+            binding.deliveryEt.requestFocus();
             return;
         }if (latitude==0.0 || longitude==0.0){
             Toast.makeText(this, "Please Click GPS button for location detection!",Toast.LENGTH_SHORT).show();
             return;
+        } if (TextUtils.isEmpty(country)) {
+            Toast.makeText(this, "Enter Country Name", Toast.LENGTH_SHORT).show();
+            binding.countryEt.requestFocus();
+            return;
         }if (TextUtils.isEmpty(zone)){
             Toast.makeText(this, "Enter Zone!",Toast.LENGTH_SHORT).show();
+            binding.zoneEt.requestFocus();
+            return;
+        }if (TextUtils.isEmpty(city)) {
+            Toast.makeText(this, "Enter city!", Toast.LENGTH_SHORT).show();
+            binding.cityEt.requestFocus();
             return;
         }if (TextUtils.isEmpty(address)){
             Toast.makeText(this, "Enter Address!",Toast.LENGTH_SHORT).show();
-            return; }
-        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()){
-            Toast.makeText(this, "Enter Valid Email!",Toast.LENGTH_SHORT).show();
-            return; }
-        if (password.length()<8){
-            Toast.makeText(this, "Password must consist of ATLEAST 8 characters!",Toast.LENGTH_SHORT).show();
+            binding.addressEt.requestFocus();
             return;
-        }if (!password.equals(confirmPassword)){
-            Toast.makeText(this, "Passwords do not match!Try Again...",Toast.LENGTH_SHORT).show();
+        }if (TextUtils.isEmpty(email)) {
+            Toast.makeText(this, "Enter Email", Toast.LENGTH_SHORT).show();
+            binding.emailEt.requestFocus();
             return;
+        }if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()){
+            binding.emailEt.setError("Invalid Email Address");
+            binding.emailEt.requestFocus();
+            return;
+        }if (password.length()<8){
+            binding.passwordEt.setError("Password length should be 8 or above");
+            binding.passwordEt.requestFocus();
+            return;
+        }if (TextUtils.isEmpty(password)) {
+            Toast.makeText(this, "Enter Password", Toast.LENGTH_SHORT).show();
+            binding.passwordEt.requestFocus();
+            return;
+        }if (TextUtils.isEmpty(confirmPassword)) {
+            Toast.makeText(this, "Enter confirm password", Toast.LENGTH_SHORT).show();
+            binding.cPasswordEt.requestFocus();
+            return;
+        }if (!password.equals(confirmPassword)) {
+            Toast.makeText(this, "don't match password", Toast.LENGTH_SHORT).show();
+            binding.passwordEt.setError("Password & confirm password should be same");
+            binding.cPasswordEt.setError("Password & confirm password should be same");
+            binding.passwordEt.requestFocus();
+            binding.cPasswordEt.requestFocus();
         }
         //When all validations are met, CreateAccount
         createAccount();
-
     }
 
     private void createAccount() {
@@ -208,6 +208,7 @@ public class RegisterSellerActivity extends AppCompatActivity implements Locatio
         firebaseAuth.createUserWithEmailAndPassword(email,password).addOnSuccessListener(new OnSuccessListener<AuthResult>() {
             @Override
             public void onSuccess(AuthResult authResult) {
+                progressDialog.dismiss();
                 //Account created
                 saveFirebaseData();
             }
@@ -223,7 +224,7 @@ public class RegisterSellerActivity extends AppCompatActivity implements Locatio
 
     private void saveFirebaseData() {
         progressDialog.setMessage("Saving Account Info!");
-        String timeStamp = "" + System.currentTimeMillis();
+        final String timeStamp = "" + System.currentTimeMillis();
 
         if (image_uri == null){
             //Save info without image
@@ -244,7 +245,7 @@ public class RegisterSellerActivity extends AppCompatActivity implements Locatio
             hashMap.put("latitude",""+latitude);
             hashMap.put("longitude",""+longitude);
             hashMap.put("timeStamp",""+timeStamp);
-            hashMap.put("accountType","Seller");
+            hashMap.put("accountType","" +"Seller");
             hashMap.put("online","true");
             hashMap.put("shopOpen","true");
             hashMap.put("profileImage","");
@@ -282,7 +283,7 @@ public class RegisterSellerActivity extends AppCompatActivity implements Locatio
                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                             //Get url for uploading image
                             Task<Uri> uriTask = taskSnapshot.getStorage().getDownloadUrl();
-                            while (uriTask.isSuccessful());
+                            while (!uriTask.isSuccessful());
                             Uri downloadImageUri = uriTask.getResult();
                             if (uriTask.isSuccessful()){
                                 //Setup data to save
@@ -301,9 +302,9 @@ public class RegisterSellerActivity extends AppCompatActivity implements Locatio
                                 hashMap.put("latitude",""+latitude);
                                 hashMap.put("longitude",""+longitude);
                                 hashMap.put("timeStamp",""+timeStamp);
-                                hashMap.put("accountType","Seller");
-                                hashMap.put("online","true");
-                                hashMap.put("shopOpen","true");
+                                hashMap.put("accountType",""+"Seller");
+                                hashMap.put("online",""+"true");
+                                hashMap.put("shopOpen",""+"true");
                                 hashMap.put("profileImage","" + downloadImageUri); //Url of uploaded image
 
                                 //Save to db
@@ -342,7 +343,7 @@ public class RegisterSellerActivity extends AppCompatActivity implements Locatio
 
     private void showImagePickDialog() {
         //Options to Display in dialog
-        String[] options = {"Camera","Gallery"};
+        String options[] = {"Camera","Gallery"};
         //Dialog
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Pick Image")
@@ -381,8 +382,8 @@ public class RegisterSellerActivity extends AppCompatActivity implements Locatio
 
     private void pickFromCamera(){
         ContentValues contentValues = new ContentValues();
-        contentValues.put(MediaStore.Images.Media.TITLE, "Temp_Image Title");
-        contentValues.put(MediaStore.Images.Media.DESCRIPTION, "Temp_Image Description");
+        contentValues.put(MediaStore.Images.Media.TITLE, "Image Title");
+        contentValues.put(MediaStore.Images.Media.DESCRIPTION, "Image Description");
 
         image_uri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues);
 
@@ -391,8 +392,7 @@ public class RegisterSellerActivity extends AppCompatActivity implements Locatio
         startActivityForResult(intent, IMAGE_PICK_CAMERA_CODE);
     }
 
-
-        //Checks for Location Permission
+    //Checks for Location Permission
     private boolean checkLocationPermission(){
         boolean result = ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION) == (PackageManager.PERMISSION_GRANTED);
@@ -477,22 +477,25 @@ public class RegisterSellerActivity extends AppCompatActivity implements Locatio
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        if (requestCode == RESULT_OK){
-            if (requestCode == IMAGE_PICK_GALLERY_CODE){
-                //Get picked image
+        //handle image pick result
+        if (resultCode == RESULT_OK) {
+            if (requestCode == IMAGE_PICK_GALLERY_CODE) {
+                //picked from gallery
                 image_uri = data.getData();
-                //Set to imageView
-                profileIv.setImageURI(image_uri);
-            }else if(requestCode == IMAGE_PICK_CAMERA_CODE){
-                //Set to imageView
-                profileIv.setImageURI(image_uri);
+                //now set the image to imageView
+                binding.profileIv.setImageURI(image_uri);
+            } else if (requestCode == IMAGE_PICK_CAMERA_CODE) {
+                //picked from camera
+                binding.profileIv.setImageURI(image_uri);
             }
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
 
+    @SuppressWarnings("MissingPermission")
     private void detectLocation() {
-        Toast.makeText(this,"Please wait...",Toast.LENGTH_LONG).show();
+
+        Toast.makeText(this,"Please wait",Toast.LENGTH_LONG).show();
         locationManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,0,0,this);
     }
@@ -502,7 +505,6 @@ public class RegisterSellerActivity extends AppCompatActivity implements Locatio
         //Location detect
         latitude = location.getLatitude();
         longitude = location.getLongitude();
-
         findAddress();
     }
 
@@ -520,11 +522,10 @@ public class RegisterSellerActivity extends AppCompatActivity implements Locatio
             String country = addresses.get(0).getCountryCode();
 
             //Set address
-            countryEt.setText(country);
-            zoneEt.setText(zone);
-            cityEt.setText(city);
-            countryEt.setText(country);
-
+            binding.countryEt.setText(country);
+            binding.zoneEt.setText(zone);
+            binding.cityEt.setText(city);
+            binding.countryEt.setText(country);
         }catch(Exception e){
             Toast.makeText(this,""+ e.getMessage(),Toast.LENGTH_SHORT).show();
         }

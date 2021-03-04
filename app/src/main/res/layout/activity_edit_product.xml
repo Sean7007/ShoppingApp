@@ -1,7 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="clickHandle"
+            type="com.desperdartos.shoppingapp.commands.EditProductActivityClicks" />
+    </data>
+
+    <LinearLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -15,6 +23,7 @@
         <ImageButton
             android:id="@+id/backBtn"
             android:src="@drawable/ic_left_24"
+            android:onClick="@{(view)->clickHandle.backBtnClick()}"
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:background="@null"/>
@@ -37,6 +46,7 @@
             android:layout_height="100dp"
             android:id="@+id/productIconIv"
             android:layout_centerHorizontal="true"
+            android:onClick="@{(view)->clickHandle.productIconClick()}"
             android:layout_marginTop="20dp"
             android:src="@drawable/ic_baseline_add_shopping_cart_24"
             app:c_border="true"
@@ -74,6 +84,7 @@
             android:hint="Category"
             android:layout_margin="5dp"
             android:background="@drawable/shape_rec02"
+            android:onClick="@{(view)->clickHandle.categoryTvClick()}"
             android:drawableStart="@drawable/ic_categories_24"
             android:drawableEnd="@drawable/ic_arrow_down_24"
             android:drawablePadding="10dp"
@@ -146,14 +157,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Update Product"
+            android:onClick="@{(view)->clickHandle.editProductBtn()}"
             android:layout_centerHorizontal="true"
             android:layout_below="@+id/discountedNotePriceEt"
             style="@style/Widget.AppCompat.Button.Colored"
             android:minWidth="150dp"
             android:layout_marginTop="5dp"/>
-
-
-
-
     </RelativeLayout>
 </LinearLayout>
+
+</layout>

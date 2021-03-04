@@ -1,10 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:tools="http://schemas.android.com/tools">
+    <data>
+        <variable
+            name="clickHandle"
+            type="com.desperdartos.shoppingapp.commands.ShopDetailsActivityClicks" />
+    </data>
+
+    <RelativeLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ShopDetailsActivity">
+    tools:context=".activities.ShopDetailsActivity">
 
     <!--Shop Details-->
     <RelativeLayout
@@ -53,7 +60,6 @@
                 android:layout_below="@+id/phoneTv"
                 android:textColor="@color/white"
                 android:layout_marginStart="3dp"/>
-
             <TextView
                 android:id="@+id/openCloseTv"
                 android:layout_width="wrap_content"
@@ -77,6 +83,19 @@
                 android:layout_below="@+id/openCloseTv"
                 android:textColor="@color/white"
                 android:layout_marginStart="3dp"/>
+
+            <!--                rating bar show average ratings -->
+            <RatingBar
+                android:id="@+id/ratingBar"
+                style="@style/Widget.AppCompat.RatingBar.Small"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/deliveryFeeTv"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:numStars="5"
+                android:progressBackgroundTint="@color/colorGray00"
+                android:progressTint="@color/white"/>
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -86,7 +105,6 @@
                 android:textColor="@color/white"
                 android:layout_marginStart="3dp"
                 android:layout_marginTop="10dp"/>
-
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -99,100 +117,132 @@
                     android:layout_height="wrap_content"
                     android:src="@drawable/ic_phone_24"
                     android:background="@null"
+                    android:onClick="@{(view)->clickHandle.callBtn()}"
                     android:id="@+id/callBtn"/>
                 <ImageButton
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="5dp"
+                    android:onClick="@{(view)->clickHandle.mapBtn()}"
                     android:id="@+id/mapBtn"
                     android:src="@drawable/ic_map_24"
                     android:background="@null"/>
             </LinearLayout>
         </RelativeLayout>
     </RelativeLayout>
-
-    <!--Toolbar-->
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/toolbarRl"
-        android:background="@drawable/shape_rec"
-        android:padding="10dp">
-        <ImageButton
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:id="@+id/cartBtn"
-            android:layout_alignParentEnd="true"
-            android:background="@null"
-            android:src="@drawable/ic_shopping_cart_24"/>
-        <ImageButton
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:id="@+id/backBtn"
-            android:background="@null"
-            android:src="@drawable/ic_left_24"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_centerVertical="true"
-            android:text="Shop Details"
-            android:textColor="@color/black"
-            android:textSize="20sp"/>
-    </RelativeLayout>
-
-    <!--Products-->
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/productRl"
-        android:layout_below="@+id/shopRl">
-        <!--Search-->
-        <EditText
+        <!--ToolBar-->
+        <RelativeLayout
+            android:id="@+id/toolBarRl"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/searchProductEt"
-            android:layout_margin="5dp"
-            android:layout_toStartOf="@+id/filterProductBtn"
-            android:background="@drawable/shape_rec02"
-            android:drawableStart="@drawable/ic_search_24"
-            android:drawablePadding="10dp"
-            android:hint="Search"
-            android:padding="10dp"/>
+            android:background="@drawable/shape_rec"
+            android:padding="10dp">
 
-        <!--filter product-->
-        <ImageButton
-            android:layout_width="45dp"
-            android:layout_height="45dp"
-            android:id="@+id/filterProductBtn"
-            android:layout_alignParentEnd="true"
-            android:layout_marginTop="5dp"
-            android:layout_marginEnd="5dp"
-            android:background="@null"
-            android:scaleType="fitXY"
-            android:src="@drawable/ic_dashboard_24"/>
+            <ImageButton
+                android:id="@+id/cartBtn"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginTop="8dp"
+                android:background="@null"
+                android:onClick="@{(view)->clickHandle.cartBtn()}"
+                android:src="@drawable/ic_shopping_cart_white" />
 
-        <!-- Show Filtered Products title-->
-        <TextView
-            android:id="@+id/filteredProductsTv"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/searchProductEt"
-            android:layout_marginStart="5dp"
-            android:text="Showing All"
-            android:textColor="@color/black"/>
+            <ImageButton
+                android:id="@+id/backBtn"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_alignParentLeft="true"
+                android:background="@null"
+                android:onClick="@{(view)->clickHandle.backBtnClick()}"
+                android:src="@drawable/ic_left_24" />
 
-        <!---->
-        <androidx.recyclerview.widget.RecyclerView
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:text="Shop Details"
+                android:textColor="@color/white"
+                android:textSize="20sp" />
+            <!--cart item count badge-->
+            <TextView
+                android:id="@+id/cartCountTv"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:background="@drawable/shape_circle_03"
+                android:gravity="center"
+                android:text="18"
+                android:textColor="@color/white"
+                android:textSize="18sp" />
+            <!--show shop reviews-->
+            <ImageView
+                android:id="@+id/reviewsBtn"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_centerVertical="true"
+                android:layout_toStartOf="@id/cartBtn"
+                android:layout_toLeftOf="@id/cartBtn"
+                android:background="@android:color/transparent"
+                android:onClick="@{(view)->clickHandle.reviewsBtnClick()}"
+                android:src="@drawable/ic_starr_white" />
+        </RelativeLayout>
+        <!--Products-->
+        <RelativeLayout
+            android:id="@+id/productsRl"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:id="@+id/productRv"
-            android:layout_below="@+id/filteredProductsTv"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            tools:listitem="@layout/row_product_seller"/>
-
-
-
+            android:layout_below="@+id/shopRl">
+            <!--search-->
+            <EditText
+                android:id="@+id/searchProductEt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:layout_toStartOf="@id/filterProductBtn"
+                android:layout_toLeftOf="@id/filterProductBtn"
+                android:background="@drawable/shape_rec02"
+                android:drawableStart="@drawable/ic_search_24"
+                android:drawableLeft="@drawable/ic_search_24"
+                android:drawablePadding="10dp"
+                android:hint="Search"
+                android:padding="10dp" />
+            <!--filter product-->
+            <ImageButton
+                android:id="@+id/filterProductBtn"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginTop="5dp"
+                android:layout_marginEnd="5dp"
+                android:layout_marginRight="5dp"
+                android:background="@null"
+                android:onClick="@{(view)->clickHandle.filterProductbtn()}"
+                android:scaleType="fitXY"
+                android:src="@drawable/ic_dashboard_24" />
+            <!--show filtered product title-->
+            <TextView
+                android:id="@+id/filteredProductsTv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/searchProductEt"
+                android:layout_marginStart="5dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginBottom="5dp"
+                android:text="Showing All"
+                android:textColor="@color/black" />
+            <!--recyclerView to show product-->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/productsRv"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@id/filteredProductsTv"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:listitem="@layout/row_product_seller" />
+        </RelativeLayout>
     </RelativeLayout>
-</RelativeLayout>
+</layout>

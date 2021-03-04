@@ -1,11 +1,18 @@
 package com.desperdartos.shoppingapp.models;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class ModelProduct {
     private String productId,productTitle, productCategory,productDescription,
             productQuantity,productIcon, originalPrice,discountPrice,discountNote,discountAvailable
             ,timestamp,uid;
 
-    //Empty Constructor
+    /*Empty Constructor
     public ModelProduct(){}
 
     //Parameter Constructor
@@ -116,5 +123,5 @@ public class ModelProduct {
 
     public void setUid(String uid) {
         this.uid = uid;
-    }
+    }*/
 }

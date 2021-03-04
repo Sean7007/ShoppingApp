@@ -17,16 +17,19 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.desperdartos.shoppingapp.FilterProductUser;
+import com.desperdartos.shoppingapp.filter.FilterProductUser;
 import com.desperdartos.shoppingapp.R;
+import com.desperdartos.shoppingapp.activities.ShopDetailsActivity;
 import com.desperdartos.shoppingapp.models.ModelProduct;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
+import lombok.AllArgsConstructor;
 import p32929.androideasysql_library.Column;
 import p32929.androideasysql_library.EasyDB;
 
+@AllArgsConstructor
 public class AdapterProductUser extends RecyclerView.Adapter<AdapterProductUser.HolderProductUser> implements Filterable {
 
     //
@@ -34,11 +37,10 @@ public class AdapterProductUser extends RecyclerView.Adapter<AdapterProductUser.
     public ArrayList<ModelProduct> productsLists, filterList;
     private FilterProductUser filter;
 
-    public AdapterProductUser(Context context, ArrayList<ModelProduct> productsLists) {
+    public AdapterProductUser(ArrayList<ModelProduct> productsLists, Context context) {
         this.context = context;
         this.productsLists = productsLists;
         this.filterList = productsLists;
-
     }
 
     @NonNull
@@ -52,7 +54,7 @@ public class AdapterProductUser extends RecyclerView.Adapter<AdapterProductUser.
     @Override
     public void onBindViewHolder(@NonNull HolderProductUser holder, int position) {
         //Get Data
-        ModelProduct modelProduct = productsLists.get(position);
+        final ModelProduct modelProduct = productsLists.get(position);
         String discountAvailable = modelProduct.getDiscountAvailable();
         String discountNote = modelProduct.getDiscountNote();
         String discountPrice = modelProduct.getDiscountPrice();
@@ -67,10 +69,10 @@ public class AdapterProductUser extends RecyclerView.Adapter<AdapterProductUser.
 
         //Set data
         holder.titleTv.setText(productTitle);
-        holder.discountNoteTv.setText(discountNote);
+        holder.discountNoteTv.setText(discountNote + "% OFF");
         holder.descriptionTv.setText(productDescription);
-        holder.originalPriceTv.setText("P"+originalPrice);
-        holder.discountPriceTv.setText("P"+discountPrice);
+        holder.originalPriceTv.setText(""+originalPrice);
+        holder.discountPriceTv.setText(""+discountPrice);
 
         if (discountAvailable.equals("true")){
             //Product is on discount
@@ -115,27 +117,27 @@ public class AdapterProductUser extends RecyclerView.Adapter<AdapterProductUser.
         View view = LayoutInflater.from(context).inflate(R.layout.dialog_quantity,null);
         //init layout views
         ImageView productIv = view.findViewById(R.id.productIv);
-        TextView titleTv = view.findViewById(R.id.titleTv);
+        final TextView titleTv = view.findViewById(R.id.titleTv);
         TextView pQuantityTv = view.findViewById(R.id.pQuantityTv);
         TextView descriptionTv = view.findViewById(R.id.descriptionTv);
         TextView discountedNoteTv = view.findViewById(R.id.discountNoteTv);
-        TextView originalPriceTv = view.findViewById(R.id.originalPriceTv);
+        final TextView originalPriceTv = view.findViewById(R.id.originalPriceTv);
         TextView priceDiscountedTv = view.findViewById(R.id.priceDiscountedTv);
-        TextView finalPriceTv = view.findViewById(R.id.finalPriceTv);
+        final TextView finalPriceTv = view.findViewById(R.id.finalPriceTv);
         ImageButton decrementBtn = view.findViewById(R.id.decrementBtn);
-        TextView quantityTv = view.findViewById(R.id.quantityTv);
+        final TextView quantityTv = view.findViewById(R.id.quantityTv);
         ImageButton incrementBtn = view.findViewById(R.id.incrementBtn);
         Button continueBtn = view.findViewById(R.id.continueBtn);
 
         //Get data from model
-        String productId = modelProduct.getProductId();
+        final String productId = modelProduct.getProductId();
         String title = modelProduct.getProductTitle();
         String productQuantity = modelProduct.getProductQuantity();
         String description = modelProduct.getProductDescription();
         String discountNote = modelProduct.getDiscountNote();
         String image = modelProduct.getProductIcon();
 
-        String price;
+        final String price;
         if (modelProduct.getDiscountAvailable().equals("true")){
             price = modelProduct.getDiscountPrice();
             discountedNoteTv.setVisibility(View.VISIBLE);
@@ -146,8 +148,8 @@ public class AdapterProductUser extends RecyclerView.Adapter<AdapterProductUser.
             priceDiscountedTv.setVisibility(View.GONE);
             price = modelProduct.getOriginalPrice();
         }
-        cost = Double.parseDouble(price.replaceAll("P",""));
-        finalCost = Double.parseDouble(price.replaceAll("P", ""));
+        cost = Double.parseDouble(price.replaceAll("",""));
+        finalCost = Double.parseDouble(price.replaceAll("", ""));
         quantity = 1;
 
         //dialog
@@ -163,13 +165,13 @@ public class AdapterProductUser extends RecyclerView.Adapter<AdapterProductUser.
         titleTv.setText(""+ title);
         pQuantityTv.setText(""+ productQuantity);
         descriptionTv.setText(""+description);
-        discountedNoteTv.setText(""+discountNote);
+        discountedNoteTv.setText(""+discountNote+"%" + "OFF");
         quantityTv.setText(""+quantity);
         originalPriceTv.setText("P"+modelProduct.getOriginalPrice());
         priceDiscountedTv.setText("P"+modelProduct.getDiscountPrice());
-        finalPriceTv.setText("P"+finalCost);
+        finalPriceTv.setText(""+finalCost);
 
-        AlertDialog dialog = builder.create();
+        final AlertDialog dialog = builder.create();
         dialog.show();
 
         //increase quantity of product
@@ -179,7 +181,7 @@ public class AdapterProductUser extends RecyclerView.Adapter<AdapterProductUser.
                 finalCost = finalCost + cost;
                 quantity++;
 
-                finalPriceTv.setText("P" +finalCost);
+                finalPriceTv.setText("" +finalCost);
                 quantityTv.setText(""+ quantity);
             }
         });
@@ -191,7 +193,7 @@ public class AdapterProductUser extends RecyclerView.Adapter<AdapterProductUser.
                    finalCost = finalCost - cost;
                    quantity--;
 
-                   finalPriceTv.setText("P" +finalCost);
+                   finalPriceTv.setText("" +finalCost);
                    quantityTv.setText(""+ quantity);
                }
             }
@@ -200,12 +202,12 @@ public class AdapterProductUser extends RecyclerView.Adapter<AdapterProductUser.
             @Override
             public void onClick(View view) {
                 String title = titleTv.getText().toString().trim();
-                String priceEach = originalPriceTv.getText().toString().trim().replace("P","");
-                String price = finalPriceTv.getText().toString().trim().replace("","");
+                String priceEach = price;
+                String totalPrice = finalPriceTv.getText().toString().trim().replace("","");
                 String quantity = quantityTv.getText().toString().trim();
 
                 //add to db- SQL Lite
-                addToCart(productId,title,priceEach, price, quantity);
+                addToCart(productId,title,priceEach, totalPrice, quantity);
                 dialog.dismiss();
 
             }
@@ -215,8 +217,7 @@ public class AdapterProductUser extends RecyclerView.Adapter<AdapterProductUser.
     private int itemId = 1;
     private void addToCart(String productId, String title, String priceEach, String price, String quantity) {
         itemId++;
-
-        EasyDB easyDB = EasyDB.init(context, "ITEM_DB")
+        EasyDB easyDB = EasyDB.init(context, "ITEMS_DB")
                 .setTableName("ITEMS_TABLE")
                 .addColumn(new Column("Item_Id", new String[]{"text","unique"}))
                 .addColumn(new Column("Item_PID", new String[]{"text","not null"}))
@@ -232,9 +233,9 @@ public class AdapterProductUser extends RecyclerView.Adapter<AdapterProductUser.
                 .addData("Item_Price",price)
                 .addData("Item_Quantity",quantity)
                 .doneDataAdding();
-
         Toast.makeText(context,"Added To Cart!", Toast.LENGTH_SHORT).show();
-
+        //update cart count
+        ((ShopDetailsActivity)context).cartCount();
     }
 
     @Override

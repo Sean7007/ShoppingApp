@@ -13,12 +13,20 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.desperdartos.shoppingapp.R;
-import com.desperdartos.shoppingapp.ShopDetailsActivity;
+import com.desperdartos.shoppingapp.activities.ShopDetailsActivity;
 import com.desperdartos.shoppingapp.models.ModelShop;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
+import lombok.AllArgsConstructor;
+
+@AllArgsConstructor
 public class AdapterShop extends RecyclerView.Adapter<AdapterShop.HolderShop> {
     //var declaration
     private Context context;
@@ -52,13 +60,14 @@ public class AdapterShop extends RecyclerView.Adapter<AdapterShop.HolderShop> {
         String online = modelShop.getOnline();
         String name = modelShop.getName();
         String phone = modelShop.getPhone();
-        String uid = modelShop.getUid();
+        final String uid = modelShop.getUid();
         String timeStamp = modelShop.getTimeStamp();
         String shopOpen = modelShop.getShopOpen();
         String profileImage = modelShop.getProfileImage();
         String shopName = modelShop.getShopName();
         String zone = modelShop.getZone();
 
+        loadReviews(modelShop,holder);//load avg ratings,set to rating bar
         //set data
         holder.shopNameTv.setText(shopName);
         holder.phoneTv.setText(phone);
@@ -96,10 +105,35 @@ public class AdapterShop extends RecyclerView.Adapter<AdapterShop.HolderShop> {
                 Intent intent = new Intent(context, ShopDetailsActivity.class);
                 intent.putExtra("shopUid",uid);
                 context.startActivity(intent);
-
             }
         });
     }
+
+    private float ratingSum = 0;
+    private void loadReviews(ModelShop modelShop, final HolderShop holder) {
+        String shopUid  = modelShop.getUid();
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Users");
+        reference.child(shopUid).child("Ratings")
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        ratingSum = 0;
+                        for (DataSnapshot ds : snapshot.getChildren()) {
+                            float rating = Float.parseFloat("" + ds.child("ratings").getValue());//e.g 4.3
+                            ratingSum = ratingSum + rating;//for avg rating, add (addition of) all ratings later we will divide by number of reviews
+                        }
+                        long numberOfReviews = snapshot.getChildrenCount();
+                        float avgRatings = ratingSum / numberOfReviews;
+                        holder.ratingBar.setRating(avgRatings);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
+    }
+
 
     @Override
     public int getItemCount() {
