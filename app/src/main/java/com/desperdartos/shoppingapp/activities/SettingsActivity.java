@@ -28,8 +28,8 @@ public class SettingsActivity extends AppCompatActivity {
     private SharedPreferences sp;
     private SharedPreferences.Editor spEditor;
 
-@Override
-protected void onCreate(Bundle savedInstanceState) {
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_settings);
         firebaseAuth = FirebaseAuth.getInstance();
@@ -39,74 +39,74 @@ protected void onCreate(Bundle savedInstanceState) {
         isChecked = sp.getBoolean("FCM_ENABLED", false);
         binding.fcmSwitch.setChecked(isChecked);
         if (isChecked) {
-        //was enabled
-        binding.notificationStatusTv.setText(enabledMessage);
+            //was enabled
+            binding.notificationStatusTv.setText(enabledMessage);
         } else {
-        //was disabled
-        binding.notificationStatusTv.setText(disabledMessage);
+            //was disabled
+            binding.notificationStatusTv.setText(disabledMessage);
         }
 
         binding.setClickHandle(new SettingsActivityClicks() {
-        @Override
-        public void backBtnClicks() {
-             onBackPressed();
-        }
+            @Override
+            public void backBtnClicks() {
+                onBackPressed();
+            }
         });
         //add switch check change listener to enable disable notification
         binding.fcmSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-@Override
-public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-        if (isChecked) {
-        //checked enable notification
-        subscribeToTopic();
-        } else {
-        //unChecked disabled notification
-        unSubscribeToTopic();
-        }
-        }
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    //checked enable notification
+                    subscribeToTopic();
+                } else {
+                    //unChecked disabled notification
+                    unSubscribeToTopic();
+                }
+            }
         });
-        }
+    }
 
-private void subscribeToTopic() {
+    private void subscribeToTopic() {
         FirebaseMessaging.getInstance().subscribeToTopic(Constants.FCM_TOPIC).addOnSuccessListener(new OnSuccessListener<Void>() {
-@Override
-public void onSuccess(Void aVoid) {
-        //subscribed successfully
-        //save settings in sharedPreferance
-        spEditor = sp.edit();
-        spEditor.putBoolean("FCM_ENABLED", true);
-        spEditor.apply();
-        Toast.makeText(SettingsActivity.this, "" + enabledMessage, Toast.LENGTH_SHORT).show();
-        binding.notificationStatusTv.setText(enabledMessage);
-        }
+            @Override
+            public void onSuccess(Void aVoid) {
+                //subscribed successfully
+                //save settings in sharedPreference
+                spEditor = sp.edit();
+                spEditor.putBoolean("FCM_ENABLED", true);
+                spEditor.apply();
+                Toast.makeText(SettingsActivity.this, "" + enabledMessage, Toast.LENGTH_SHORT).show();
+                binding.notificationStatusTv.setText(enabledMessage);
+            }
         }).addOnFailureListener(new OnFailureListener() {
-@Override
-public void onFailure(@NonNull Exception e) {
-        //failed subscribing
-        Toast.makeText(SettingsActivity.this, "" + e.getMessage(), Toast.LENGTH_SHORT).show();
-        }
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                //failed subscribing
+                Toast.makeText(SettingsActivity.this, "" + e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
         });
-        }
+    }
 
-private void unSubscribeToTopic() {
+    private void unSubscribeToTopic() {
         FirebaseMessaging.getInstance().unsubscribeFromTopic(Constants.FCM_TOPIC)
-        .addOnSuccessListener(new OnSuccessListener<Void>() {
-@Override
-public void onSuccess(Void aVoid) {
-        //unsSubscribed
-        //save settings in sharedPreferance
-        spEditor = sp.edit();
-        spEditor.putBoolean("FCM_ENABLED", false);
-        spEditor.apply();
-        Toast.makeText(SettingsActivity.this, "" + disabledMessage, Toast.LENGTH_SHORT).show();
-        binding.notificationStatusTv.setText(disabledMessage);
-        }
-        }).addOnFailureListener(new OnFailureListener() {
- @Override
- public void onFailure(@NonNull Exception e) {
-        //failed unSubscribing
-        Toast.makeText(SettingsActivity.this, "" + e.getMessage(), Toast.LENGTH_SHORT).show();
-        }
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        //unsSubscribed
+                        //save settings in shared-Preference
+                        spEditor = sp.edit();
+                        spEditor.putBoolean("FCM_ENABLED", false);
+                        spEditor.apply();
+                        Toast.makeText(SettingsActivity.this, "" + disabledMessage, Toast.LENGTH_SHORT).show();
+                        binding.notificationStatusTv.setText(disabledMessage);
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                //failed unSubscribing
+                Toast.makeText(SettingsActivity.this, "" + e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
         });
-        }
+    }
 }

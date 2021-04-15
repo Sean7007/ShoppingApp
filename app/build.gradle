@@ -42,10 +42,14 @@ dependencies {
     implementation 'com.google.firebase:firebase-auth:20.0.2'
     implementation 'com.google.firebase:firebase-database:19.6.0'
     implementation 'com.google.firebase:firebase-storage:19.2.1'
-    implementation 'com.google.firebase:firebase-messaging:20.2.4'
+    implementation 'com.google.firebase:firebase-messaging:21.0.1'
 
     implementation "android.arch.lifecycle:extensions:1.1.0"
     implementation "android.arch.lifecycle:viewmodel:1.1.0"
+    implementation 'com.google.firebase:firebase-firestore:22.1.0'
+
+    //Validation library
+    implementation 'com.basgeekball:awesome-validation:4.2'
 
     compileOnly 'org.projectlombok:lombok:1.18.12'
     annotationProcessor 'org.projectlombok:lombok:1.18.12'

@@ -58,7 +58,7 @@
             android:onClick="@{(view)->clickHandle.reviewsBtnClick()}"
             android:layout_toStartOf="@id/addProductBtn"
             android:layout_toLeftOf="@id/addProductBtn"
-            android:background="@color/purple_500"
+            android:background="@color/colorRed"
             android:src="@drawable/ic_starr_white" />
         <!--            settings-->
         <ImageButton
@@ -87,7 +87,6 @@
             android:text="Name"
             android:fontFamily="@font/graphiksemibold"
             android:textStyle="bold"
-            android:textSize="25sp"
             android:layout_toEndOf="@+id/profileIv"
             android:textColor="@color/white"/>
 
@@ -126,7 +125,7 @@
                 android:background="@drawable/shape_rec04"
                 android:gravity="center"
                 android:onClick="@{(view)->clickHandle.tabProductsClicks()}"
-                android:text="Products"
+                android:text="Your Products/Services"
                 android:textColor="@color/black"/>
             <!--Orders-->
             <TextView
@@ -136,7 +135,7 @@
                 android:layout_weight="1"
                 android:gravity="center"
                 android:onClick="@{(view)->clickHandle.tabOrdersClicks()}"
-                android:text="Orders"
+                android:text="Orders Received"
                 android:textColor="@color/white"/>
         </LinearLayout>
     </RelativeLayout>

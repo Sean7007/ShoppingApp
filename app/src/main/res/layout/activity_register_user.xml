@@ -20,7 +20,7 @@
         android:layout_width="match_parent"
         android:layout_height="80dp"
         android:background="@drawable/shape_rec"
-        android:padding="10dp">
+        android:padding="5dp">
 
         <ImageButton
             android:id="@+id/backBtn"
@@ -39,15 +39,6 @@
             android:layout_centerHorizontal="true"
             android:textSize="25sp"
             android:textColor="@color/white"/>
-
-        <ImageButton
-            android:id="@+id/gpsBtn"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:onClick="@{(view)->clickHandle.gpsBtnClick()}"
-            android:src="@drawable/ic_baseline_gps_fixed_24"
-            android:layout_alignParentEnd="true"
-            android:background="@null"/>
     </RelativeLayout>
 
     <ImageView
@@ -57,14 +48,19 @@
         android:background="@drawable/shape_circle"
         android:layout_marginTop="60dp"
         android:src="@drawable/ic_key_24"
-        android:padding="5dp"
-        android:layout_marginBottom="20dp"
+        android:layout_marginBottom="10dp"
         android:layout_centerHorizontal="true"/>
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/iconIv">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
     <de.hdodenhof.circleimageview.CircleImageView
-        android:layout_width="110dp"
-        android:layout_height="110dp"
-        android:layout_below="@+id/iconIv"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
         android:id="@+id/profileIv"
         android:layout_centerHorizontal="true"
         android:onClick="@{(view) ->clickHandle.profileIvClick()}"
@@ -79,11 +75,10 @@
         android:hint="Full Name"
         android:fontFamily="@font/graphiksemibold"
         android:padding="10dp"
+        android:layout_margin="5dp"
         android:drawableStart="@drawable/ic_person_24"
-        android:drawablePadding="5dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="5dp"
         android:inputType="textPersonName|textCapWords"
         android:background="@drawable/shape_rec02"/>
 
@@ -93,7 +88,7 @@
         android:hint="Phone #"
         android:fontFamily="@font/graphiksemibold"
         android:padding="10dp"
-        android:drawableStart="@drawable/ic_phone_24"
+        android:drawableStart="@drawable/ic_phone_gray"
         android:drawablePadding="5dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -101,23 +96,40 @@
         android:inputType="phone"
         android:background="@drawable/shape_rec02"/>
 
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/teal_700"
+            android:textStyle="italic"
+            android:fontFamily="@font/graphiksemibold"
+            android:padding="10dp"
+            android:text="NB: Click the Purple GPS icon below to get precise address"
+            android:layout_below="@+id/phoneEt"
+            android:id="@+id/locationNote"/>
+        <ImageButton
+            android:id="@+id/gpsBtn"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_below="@+id/locationNote"
+            android:src="@drawable/ic_baseline_gps_fixed_24"
+            android:onClick="@{(view)->clickHandle.gpsBtnClick()}"
+            android:background="@null"/>
+
     <LinearLayout
         android:id="@+id/addressLl"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_below="@+id/phoneEt">
+        android:layout_below="@+id/gpsBtn">
 
         <EditText
             android:id="@+id/countryEt"
             android:hint="Country"
             android:fontFamily="@font/graphiksemibold"
             android:padding="10dp"
-            android:drawableStart="@drawable/ic_add_location_24"
-            android:drawablePadding="5dp"
+            android:layout_margin="5dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="5dp"
             android:inputType="textPostalAddress"
             android:layout_weight="1"
             android:background="@drawable/shape_rec02"/>
@@ -126,23 +138,21 @@
             android:hint="Zone"
             android:fontFamily="@font/graphiksemibold"
             android:padding="10dp"
-            android:drawableStart="@drawable/ic_add_location_24"
+            android:layout_margin="5dp"
             android:drawablePadding="5dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="5dp"
             android:layout_weight="1"
             android:inputType="textPostalAddress"
             android:background="@drawable/shape_rec02"/>
         <EditText
             android:id="@+id/cityEt"
-            android:hint="City/Town"
+            android:hint="City"
             android:padding="10dp"
-            android:drawableStart="@drawable/ic_add_location_24"
+            android:layout_margin="5dp"
             android:drawablePadding="5dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="5dp"
             android:inputType="textPostalAddress"
             android:layout_weight="1"
             android:background="@drawable/shape_rec02"/>
@@ -154,7 +164,6 @@
         android:hint="Complete Address"
         android:fontFamily="@font/graphiksemibold"
         android:padding="10dp"
-        android:drawableStart="@drawable/ic_add_location_24"
         android:drawablePadding="5dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -195,7 +204,7 @@
         android:layout_below="@+id/passwordEt"
         android:hint="Confirm Password"
         android:fontFamily="@font/graphiksemibold"
-        android:padding="10dp"
+        android:padding="7dp"
         android:drawableStart="@drawable/ic_lock_24"
         android:drawablePadding="5dp"
         android:layout_width="match_parent"
@@ -207,6 +216,7 @@
     <Button
         android:id="@+id/registerBtn"
         android:text="Register"
+        android:background="@color/colorRed"
         style="@style/Widget.AppCompat.Button.Colored"
         android:onClick="@{(view)->clickHandle.registerBtnClick()}"
         android:layout_centerHorizontal="true"
@@ -219,13 +229,18 @@
         android:id="@+id/registerSellerTv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:fontFamily="@font/graphikmedium"
+        android:fontFamily="@font/graphiksemibold"
         android:layout_margin="5dp"
+        android:layout_below="@+id/registerBtn"
         android:textSize="16sp"
+        android:textColor="@color/black"
         android:onClick="@{(view)->clickHandle.registerSellerTvClick()}"
         android:text="Are you seller? Register As a Seller."
         android:layout_centerHorizontal="true"
         android:layout_alignParentBottom="true"/>
 
     </RelativeLayout>
+    </ScrollView>
+    </RelativeLayout>
+
 </layout>

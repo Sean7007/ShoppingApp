@@ -34,7 +34,7 @@ public class ShopReviewsActivity extends AppCompatActivity {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_shop_reviews);
         firebaseAuth = FirebaseAuth.getInstance();
 
-        //get shopuid from intent
+        //get shop-uid from intent
         shopUid = getIntent().getStringExtra("shopUid");
         loadShopDetails();//for sho name,image and average ratings
         loadReviews();//for reviews list,average ratings

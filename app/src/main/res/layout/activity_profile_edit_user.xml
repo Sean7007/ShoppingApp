@@ -43,6 +43,7 @@
             android:id="@+id/gpsBtn"
             android:layout_width="30dp"
             android:layout_height="30dp"
+            android:onClick="@{(view)->clickHandle.editUserProfileGpsBtnClick()}"
             android:src="@drawable/ic_baseline_gps_fixed_24"
             android:layout_alignParentEnd="true"
             android:background="@null"/>

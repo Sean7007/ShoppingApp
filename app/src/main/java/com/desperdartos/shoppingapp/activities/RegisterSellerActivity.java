@@ -237,7 +237,6 @@ public class RegisterSellerActivity extends AppCompatActivity implements Locatio
             hashMap.put("shopName",""+shopName);
             hashMap.put("phone",""+phoneNumber);
             hashMap.put("deliveryFee",""+deliveryFee);
-
             hashMap.put("country",""+country);
             hashMap.put("zone",""+zone);
             hashMap.put("city",""+city);
@@ -526,6 +525,7 @@ public class RegisterSellerActivity extends AppCompatActivity implements Locatio
             binding.zoneEt.setText(zone);
             binding.cityEt.setText(city);
             binding.countryEt.setText(country);
+            binding.addressEt.setText(address);
         }catch(Exception e){
             Toast.makeText(this,""+ e.getMessage(),Toast.LENGTH_SHORT).show();
         }
@@ -544,7 +544,7 @@ public class RegisterSellerActivity extends AppCompatActivity implements Locatio
     @Override
     public void onProviderDisabled(@NonNull String provider) {
         //GPS Location disabled
-        Toast.makeText(this,"Please turn on Location...",Toast.LENGTH_LONG).show();
+        Toast.makeText(this,"In your Phone: please turn on Location!",Toast.LENGTH_LONG).show();
     }
 
     @Override

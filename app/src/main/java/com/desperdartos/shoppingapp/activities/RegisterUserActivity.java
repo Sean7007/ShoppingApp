@@ -28,6 +28,9 @@ import android.text.TextUtils;
 import android.util.Patterns;
 import android.widget.Toast;
 
+import com.basgeekball.awesomevalidation.AwesomeValidation;
+import com.basgeekball.awesomevalidation.ValidationStyle;
+import com.basgeekball.awesomevalidation.utility.RegexTemplate;
 import com.desperdartos.shoppingapp.R;
 import com.desperdartos.shoppingapp.commands.RegisterUserActivityClicks;
 import com.desperdartos.shoppingapp.databinding.ActivityRegisterUserBinding;
@@ -69,6 +72,7 @@ public class RegisterUserActivity extends AppCompatActivity implements LocationL
     ProgressDialog progressDialog;
     ActivityRegisterUserBinding binding;
 
+    AwesomeValidation awesomeValidation;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -81,6 +85,11 @@ public class RegisterUserActivity extends AppCompatActivity implements LocationL
         storagePermissions = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE};
 
         firebaseAuth = FirebaseAuth.getInstance();
+        awesomeValidation = new AwesomeValidation(ValidationStyle.BASIC);
+        //Validate the confirmation of fields
+        String regexPassword = "(?=.*[a-z])(?=.*[A-Z])(?=.*[\\d])(?=.*[~`!@#\\$%\\^&\\*\\(\\)\\-_\\+=\\{\\}\\[\\]\\|\\;:\"<>,./\\?]).{8,}";
+        awesomeValidation.addValidation(RegisterUserActivity.this, R.id.phoneEt, RegexTemplate.TELEPHONE, R.string.phoneerr);
+
         progressDialog = new ProgressDialog(this);
         progressDialog.setTitle("Please Wait");
         progressDialog.setCanceledOnTouchOutside(false);
@@ -192,22 +201,24 @@ public class RegisterUserActivity extends AppCompatActivity implements LocationL
         progressDialog.setMessage("Account creation");
         progressDialog.show();
 
-        //Create account
-        firebaseAuth.createUserWithEmailAndPassword(email,password).addOnSuccessListener(new OnSuccessListener<AuthResult>() {
-            @Override
-            public void onSuccess(AuthResult authResult) {
-                progressDialog.dismiss();
-                //Account created
-                saveFirebaseData();
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                //Account failed
-                progressDialog.dismiss();
-                Toast.makeText(RegisterUserActivity.this,""+e.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
+        //If validations are met-begin data authentication
+            //Create account
+            firebaseAuth.createUserWithEmailAndPassword(email, password).addOnSuccessListener(new OnSuccessListener<AuthResult>() {
+                @Override
+                public void onSuccess(AuthResult authResult) {
+                    progressDialog.dismiss();
+                    //Account created
+                    saveFirebaseData();
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    //Account failed
+                    progressDialog.dismiss();
+                    Toast.makeText(RegisterUserActivity.this, "" + e.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            });
+
     }
     private void saveFirebaseData() {
         progressDialog.setMessage("Saving Account Info!");
@@ -528,7 +539,7 @@ public class RegisterUserActivity extends AppCompatActivity implements LocationL
     @Override
     public void onProviderDisabled(@NonNull String provider) {
         //GPS Location disabled
-        Toast.makeText(this,"Please turn on Location...",Toast.LENGTH_LONG).show();
+        Toast.makeText(this,"In your Phone: please turn on Location!",Toast.LENGTH_LONG).show();
     }
 
     @Override

@@ -111,6 +111,12 @@
                 android:layout_alignParentBottom="true"
                 android:gravity="center_horizontal"
                 android:orientation="horizontal">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Contact Us:"
+                    android:textColor="@color/white"
+                    android:fontFamily="@font/graphikmedium"/>
 
                 <ImageButton
                     android:layout_width="wrap_content"
@@ -127,6 +133,13 @@
                     android:id="@+id/mapBtn"
                     android:src="@drawable/ic_map_24"
                     android:background="@null"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/white"
+                    android:text=":Click Map to locate us"
+                    android:fontFamily="@font/graphikmedium"/>
+
             </LinearLayout>
         </RelativeLayout>
     </RelativeLayout>

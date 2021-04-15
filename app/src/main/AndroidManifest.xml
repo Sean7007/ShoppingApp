@@ -16,7 +16,7 @@
     <application
         android:allowBackup="true"
         android:icon="@drawable/shop"
-        android:label="@string/app_name"
+        android:label="Mo~Thusi"
         android:roundIcon="@drawable/shop"
         android:supportsRtl="true"
         android:theme="@style/Theme.ShoppingApp.NoActionBar">
@@ -26,6 +26,11 @@
         <activity android:name=".activities.AddProductActivity" />
         <activity android:name=".activities.ProfileEditSellerActivity" />
         <activity android:name=".activities.ProfileEditUserActivity" />
+        <activity android:name=".activities.OrderDetailsUsersActivity"/>
+        <activity android:name=".activities.OrderDetailsSellerActivity"/>
+        <activity android:name=".activities.WriteReviewActivity"/>
+        <activity android:name=".activities.ShopReviewsActivity"/>
+        <activity android:name=".activities.SettingsActivity"/>
         <activity android:name=".activities.MainUserActivity" />
         <activity android:name=".activities.MainSellerActivity" />
         <activity android:name=".activities.ForgotPasswordActivity" />

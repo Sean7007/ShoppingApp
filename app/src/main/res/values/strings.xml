@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">ShoppingApp</string>
+    <string name="phoneerr">Enter Valid Phone-Number</string>
+
 </resources>

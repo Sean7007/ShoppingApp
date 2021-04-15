@@ -31,7 +31,7 @@ public class LoginActivity extends AppCompatActivity {
 
     //UI views
     private EditText emailEt, passwordEt;
-    private TextView forgotTv, registerTv;
+    private TextView forgotTv, registerTv, register1Tv;
     private Button loginBtn;
 
     private FirebaseAuth firebaseAuth;
@@ -47,6 +47,8 @@ public class LoginActivity extends AppCompatActivity {
         passwordEt = findViewById(R.id.passwordEt);
         forgotTv = findViewById(R.id.forgotTv);
         registerTv = findViewById(R.id.registerTv);
+        register1Tv = findViewById(R.id.register1Tv);
+
         loginBtn = findViewById(R.id.loginBtn);
 
         firebaseAuth = FirebaseAuth.getInstance();
@@ -60,7 +62,12 @@ public class LoginActivity extends AppCompatActivity {
                 startActivity(new Intent(LoginActivity.this, RegisterUserActivity.class));
             }
         });
-
+        register1Tv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(LoginActivity.this, RegisterSellerActivity.class));
+            }
+        });
         forgotTv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

@@ -22,15 +22,14 @@
             android:textStyle="bold"
             android:layout_centerHorizontal="true"
             android:textSize="25sp"
-            android:textColor="@color/black"/>
+            android:textColor="@color/whitish"/>
     </RelativeLayout>
 
     <RelativeLayout
         android:layout_below="@+id/relative1"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="25dp"
-        android:background="@drawable/i01_bg">
+        android:padding="25dp">
         <ImageView
             android:id="@+id/iconIv"
             android:layout_width="40dp"
@@ -50,21 +49,21 @@
             android:background="@drawable/cart_card"
             android:drawableStart="@drawable/ic_email_purple"
             android:drawablePadding="5dp"
-            android:fontFamily="@font/graphiksemibold"
+            android:fontFamily="@font/graphikregular"
             android:hint="Email"
             android:inputType="textEmailAddress"
             android:padding="10dp"
             android:paddingLeft="20dp"
             android:paddingRight="20dp"
-            android:textSize="25sp" />
+            android:textSize="22sp" />
 
         <EditText
         android:id="@+id/passwordEt"
         android:layout_below="@+id/emailEt"
         android:hint="Password"
-        android:fontFamily="@font/graphiksemibold"
+        android:fontFamily="@font/graphikregular"
         android:padding="10dp"
-        android:textSize="25sp"
+        android:textSize="21sp"
         android:drawableStart="@drawable/ic_lock_purple"
         android:drawablePadding="5dp"
         android:paddingRight="20dp"
@@ -93,6 +92,7 @@
         style="@style/Widget.AppCompat.Button.Colored"
         android:layout_centerHorizontal="true"
         android:minWidth="120dp"
+        android:background="@color/colorRed"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/forgotTv"/>
@@ -101,12 +101,25 @@
         android:id="@+id/registerTv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="5dp"
-        android:textColor="#6228a8"
-        android:text="Don't have account? Register Here."
+        android:layout_margin="4dp"
+        android:fontFamily="@font/graphiksemibold"
+        android:textColor="@color/black"
+        android:text="Don't have an account? Register Here As A Customer."
         android:textSize="16sp"
         android:layout_centerHorizontal="true"
         android:layout_below="@+id/loginBtn"/>
+
+        <TextView
+            android:id="@+id/register1Tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:fontFamily="@font/graphiksemibold"
+            android:textColor="@color/black"
+            android:text="Are you a Seller? Register Here As A Seller!"
+            android:textSize="16sp"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@+id/registerTv"/>
 
     </RelativeLayout>
 </RelativeLayout>

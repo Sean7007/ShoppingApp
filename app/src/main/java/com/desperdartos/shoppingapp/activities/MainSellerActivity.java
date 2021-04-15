@@ -64,6 +64,8 @@ public class MainSellerActivity extends AppCompatActivity {
         checkUser();
         loadAllProducts();
         showProductsUI();
+        loadAllOrders();
+
         //search
         binding.searchProductEt.addTextChangedListener(new TextWatcher() {
             @Override
@@ -154,7 +156,6 @@ public class MainSellerActivity extends AppCompatActivity {
                                     String optionClicked = options[which];
                                     binding.filteredOrdersTv.setText("Showing " + optionClicked + " Orders");
                                     adapterOrderShop.getFilter().filter(optionClicked);
-
                                 }
                             }
                         });

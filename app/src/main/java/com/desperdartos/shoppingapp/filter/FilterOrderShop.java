@@ -11,15 +11,16 @@ import java.util.ArrayList;
 
 import lombok.AllArgsConstructor;
 
-@AllArgsConstructor
+//@AllArgsConstructor
 public class FilterOrderShop extends Filter{
     private AdapterOrderShop adapter;
     private ArrayList<ModelOrderShop> filterList;
 
-    /*public FilterOrderShop(AdapterOrderShop adapter, ArrayList<ModelOrderShop> filterList){
+    public FilterOrderShop(AdapterOrderShop adapter, ArrayList<ModelOrderShop> filterList){
         this.adapter = adapter;
         this.filterList = filterList;
-    }*/
+    }
+
     @Override
     protected FilterResults performFiltering(CharSequence constraint) {
         FilterResults result = new FilterResults();
